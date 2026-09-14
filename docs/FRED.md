@@ -219,25 +219,23 @@ Two facts established 2026-09-14: the container's network policy blocks
 `api.stlouisfed.org` (must be allowed), and this server does not match any public
 fred-mcp package (its command must be copied from the machine where it works).
 
-### Step 1 — on the Mac, get the server's exact spec
+### Step 1 — DONE (2026-09-14)
 
-In a terminal (or ask any local Claude session to run it):
+The server (a custom Node build, `~/Projects/fred-mcp/server.js`) was reviewed
+line-by-line, packaged with its exact production manifest and lockfile
+(sdk 1.30.0, zod 4.6.5), boot-verified in the target container, and published as
+the `fred-mcp` branch of this repository. The portable command is:
 
-    claude mcp get fred        # or: claude mcp list
-
-Copy the `command`, `args`, and env var NAMES it shows. Do not paste the API key value
-into any chat — it goes only into the environment settings in step 2. Two cases:
-
-- Command is portable (`uvx <pkg>`, `npx <pkg>`, `pipx run <pkg>`): proceed directly.
-- Command is a local path (`/Users/.../fred-mcp/...`): the container cannot run a Mac
-  path. Package it first: push the server's code to a private repo the environment can
-  clone, or make it pip/npm installable; then the command becomes portable.
+    command: npx
+    args:    ["-y", "github:antoniosaldanhaoliveira/paceword#fred-mcp"]
 
 ### Step 2 — Claude Code web → this environment's settings
 
 1. **Network policy**: add `api.stlouisfed.org` to the allowed domains.
 2. **Environment variables**: add `FRED_API_KEY` (free key: fredaccount.stlouisfed.org/apikeys).
-3. **MCP servers**: add server `fred` with the command/args from step 1.
+3. **MCP servers**: add server `fred` — command `npx`,
+   args `["-y", "github:antoniosaldanhaoliveira/paceword#fred-mcp"]`,
+   env `FRED_API_KEY` (the server reads exactly this name and refuses to start without it).
 
 ### Step 3 — verify (a session can do this)
 
