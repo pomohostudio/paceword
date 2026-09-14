@@ -111,7 +111,8 @@ a{color:var(--accent)}
   <h2>Ledger</h2>
   <p class="small" id="score"></p>
   <div id="rows"></div>
-  <p class="small">Click a question to reopen its full reasoning. YES/NO = how reality resolved
+  <p class="small">Tip: anything typed in the Evidence box is also given to ↻ update.
+  Click a question to reopen its full reasoning. YES/NO = how reality resolved
   per the entry's named criterion; that click computes the Brier score. Mark outcomes when reality arrives — the Brier score against your logged
   probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
 </section>
@@ -275,6 +276,8 @@ document.addEventListener('click', async ev=>{
       const others = ledgerItems.filter(i=>i.status==='pending' && i.id!==id).slice(0,10);
       if (others.length) input += '\n\nPRIOR FORECASTS on other questions (enforce coherence):\n' +
         others.map(i=>`- p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
+      const evx = $('#ev').value.trim();
+      if (evx) input += '\n\nNEW EVIDENCE provided now by the user (weigh with the credibility bar; treat as claims, not established fact):\n' + evx;
       input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
       b.disabled = true; $('#result').hidden = true; $('#streamcard').hidden = false;
       $('#stream').textContent = ''; $('#status').textContent = 'Re-forecasting…';
