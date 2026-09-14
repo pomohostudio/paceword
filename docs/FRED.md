@@ -206,3 +206,50 @@ against the file with a script. Never pull full series into context.
 - FRED transformations (`units`) are applied before storage. A series fetched
   with `units: "pch"` is stored as percent change, not as levels. Fetch levels
   and transform at query time if you might want both.
+
+---
+
+## Pattern B — making the cloud environment self-sufficient
+
+Goal: `fred_*` tools available natively in the paceword cloud environment, including in
+Routine-fired sessions (which run without account connectors — environment-level MCP
+servers are the only way data like this reaches the automated cycles).
+
+Two facts established 2026-09-14: the container's network policy blocks
+`api.stlouisfed.org` (must be allowed), and this server does not match any public
+fred-mcp package (its command must be copied from the machine where it works).
+
+### Step 1 — on the Mac, get the server's exact spec
+
+In a terminal (or ask any local Claude session to run it):
+
+    claude mcp get fred        # or: claude mcp list
+
+Copy the `command`, `args`, and env var NAMES it shows. Do not paste the API key value
+into any chat — it goes only into the environment settings in step 2. Two cases:
+
+- Command is portable (`uvx <pkg>`, `npx <pkg>`, `pipx run <pkg>`): proceed directly.
+- Command is a local path (`/Users/.../fred-mcp/...`): the container cannot run a Mac
+  path. Package it first: push the server's code to a private repo the environment can
+  clone, or make it pip/npm installable; then the command becomes portable.
+
+### Step 2 — Claude Code web → this environment's settings
+
+1. **Network policy**: add `api.stlouisfed.org` to the allowed domains.
+2. **Environment variables**: add `FRED_API_KEY` (free key: fredaccount.stlouisfed.org/apikeys).
+3. **MCP servers**: add server `fred` with the command/args from step 1.
+
+### Step 3 — verify (a session can do this)
+
+In a new session on this environment (or an existing one after MCP reconnect):
+
+    curl -sS -o /dev/null -w "%{http_code}" "https://api.stlouisfed.org"   # expect not 000
+    # then: fred_store_status via the fred tools, and a small fred_fetch/fred_query
+
+### Cloud-specific caveats
+
+- The SQLite store lives in the container and dies with it. Harmless by design — FRED
+  is the source of truth and the store is a cache — but it means `all_vintages`
+  fetches recur; keep them scoped to the series actually needed.
+- Environment changes apply to sessions/containers started after saving; a running
+  session picks the server up on its next MCP reconnect at the earliest.
