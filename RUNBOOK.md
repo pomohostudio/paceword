@@ -80,6 +80,10 @@ The cadence is held by three durable Routines bound to the originating Claude se
 - **Monthly runbook cycle** — 14th of each month (trig_01RyjRX5mLob4if4ZpaLGTh5)
 - **Quarterly panel re-poll** — Feb/May/Aug/Nov 14th (trig_01RznzGXuQzmqfXuHy9asCvW)
 - **Resolution-day scoring** — one-shot, 2029-08-09 (trig_01N5nb5J5K4fdHHJd9kbqEsu)
+- **Forecast Agent weekly ledger retrieval sweep** — Tuesdays (trig_01KHhqY7E64vya29TdbGZygq):
+  the session reads the app's pending forecasts, retrieves current news for each, and
+  writes documented revisions (history-appended, coherence-checked) into the app's
+  database — supplying the retrieval the in-page agent structurally lacks
 
 Fired sessions run without MCP connectors — sufficient, since the cycles need only web
 search, git, and (quarterly) subagents. Manage or pause them in the claude.ai Routines

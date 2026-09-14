@@ -164,6 +164,23 @@ Then END your reply with exactly one fenced json block, nothing after it:
 "coherence":"only when prior forecasts were provided: consistency verdict, any conflict and suggested revision"}
 \`\`\``;
 
+const UPDATE_MODE = `
+UPDATE MODE: you have forecast this exact question before; its trajectory is given below.
+Treat the most recent probability as your PRIOR. Report increments RELATIVE TO THAT PRIOR,
+from genuinely new considerations or the passage of time only. Small frequent updates are
+the norm (net move <=0.10 in log-odds terms unless you name extraordinary evidence).
+Account for the elapsed window: if the event needed to start by a date that is now close
+or past, the hazard has mechanically shrunk - price that in explicitly.`;
+
+function spark(h){
+  if (!h || h.length < 2) return '';
+  const w=96,ht=24,n=h.length;
+  const pts=h.map((x,i)=>`${(i/(n-1)*(w-8)+4).toFixed(1)},${(ht-4-(Math.max(0,Math.min(1,+x.p))*(ht-8))).toFixed(1)}`).join(' ');
+  return `<svg width="${w}" height="${ht}" role="img" aria-label="probability over time" style="vertical-align:middle">
+    <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <circle r="2.6" fill="var(--accent)" cx="${pts.split(' ').pop().split(',')[0]}" cy="${pts.split(' ').pop().split(',')[1]}"/></svg>`;
+}
+
 function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
 
 function renderResult(d, container, banner){
@@ -195,6 +212,10 @@ function renderResult(d, container, banner){
       </tbody></table></div></div>`:''}
     ${cruxes.length?`<div class="sect"><h2>Cruxes</h2>
       ${cruxes.map(c=>`<p>• <b>${esc(c.crux)}</b> — ${esc(c.would_move||'')}</p>`).join('')}</div>`:''}
+    ${Array.isArray(d._history)&&d._history.length>1?`<div class="sect"><h2>Trajectory</h2>${spark(d._history)}
+      <div class="wrap"><table><thead><tr><th>Date</th><th>p</th><th>90% interval</th><th>Source</th></tr></thead><tbody>
+      ${d._history.map(x=>`<tr><td>${new Date(x.date).toISOString().slice(0,10)}</td><td>${pct(+x.p)}</td>
+        <td>${pct(+x.lo)} – ${pct(+x.hi)}</td><td>${esc(x.src||'')}</td></tr>`).join('')}</tbody></table></div></div>`:''}
     ${d.coherence?`<div class="sect"><h2>Coherence</h2><p class="small">${esc(d.coherence)}</p></div>`:''}
     <div class="sect"><h2>Honesty</h2><p class="small">${esc(d.honesty||'')}</p></div>`;
   container.hidden = false;
@@ -205,6 +226,7 @@ async function logForecast(d, question){
   try {
     await db.collection('forecasts').add({
       question, sharpened: d.sharpened||'', p:+d.p, lo:+d.lo, hi:+d.hi,
+      history: [{date: Date.now(), p:+d.p, lo:+d.lo, hi:+d.hi, src:'initial'}],
       resolution_date: d.resolution?.date||'', resolution_source: d.resolution?.source||'',
       status: 'pending', created: Date.now(), detail: JSON.parse(JSON.stringify(d))
     });
@@ -224,9 +246,10 @@ function renderLedger(snap){
     <div class="ledrow" data-id="${esc(i.id)}">
       <span class="leddate">${new Date(i.created||0).toISOString().slice(0,10)}</span>
       <button class="ledq" data-act="view" title="Open the full reasoning">${esc(i.sharpened||i.question||'')}</button>
-      <span class="ledp" ${i.p_original!=null?`title="revised — originally ${pct(+i.p_original)}"`:''}>${pct(+i.p||0)}${i.p_original!=null?'<sup>r</sup>':''}</span>
+      <span class="ledp" ${i.p_original!=null?`title="revised — originally ${pct(+i.p_original)}"`:''}>${pct(+i.p||0)}</span>
+      ${Array.isArray(i.history)&&i.history.length>1?`<span class="small">${i.history.slice(-4).map(x=>pct(+x.p)).join(' → ')}</span>${spark(i.history)}`:''}
       ${i.status==='pending'
-        ? `<span class="rowbtns"><button data-act="yes">YES</button><button data-act="no">NO</button><button data-act="del" title="delete">×</button></span>`
+        ? `<span class="rowbtns"><button data-act="refresh" title="Re-forecast as of today">↻ update</button><button data-act="yes">YES</button><button data-act="no">NO</button><button data-act="del" title="delete">×</button></span>`
         : `<span class="chip ${i.status}">${i.status.toUpperCase()} · Brier ${(((+i.p)-(i.status==='yes'?1:0))**2).toFixed(3)}</span>`}
     </div>`).join('') || '<p class="small">Nothing logged yet.</p>';
   $('#ledger').hidden = false;
@@ -240,11 +263,40 @@ document.addEventListener('click', async ev=>{
   const id = b.closest('.ledrow')?.dataset.id; if(!id) return;
   const ref = db.collection('forecasts').doc(id);
   try {
-    if (b.dataset.act==='view') {
+    if (b.dataset.act==='refresh') {
+      if (!sample) { $('#status').textContent = 'Forecasting unavailable in this view.'; return; }
+      const snap0 = await ref.get(); const body0 = snap0.exists ? snap0.data() : null;
+      if (!body0) return;
+      const hist = Array.isArray(body0.history) && body0.history.length ? body0.history.slice()
+        : [{date: body0.created||Date.now(), p:+(body0.p_original??body0.p), lo:+body0.lo, hi:+body0.hi, src:'initial'}];
+      let input = PROTOCOL + UPDATE_MODE + '\n\nQUESTION: ' + (body0.sharpened||body0.question);
+      if (body0.resolution_date) input += '\nRESOLUTION DATE: ' + body0.resolution_date;
+      input += '\nPRIOR TRAJECTORY:\n' + hist.map(x=>`- ${new Date(x.date).toISOString().slice(0,10)}: p=${(+x.p).toFixed(2)} [${(+x.lo).toFixed(2)},${(+x.hi).toFixed(2)}] (${x.src||''})`).join('\n');
+      const others = ledgerItems.filter(i=>i.status==='pending' && i.id!==id).slice(0,10);
+      if (others.length) input += '\n\nPRIOR FORECASTS on other questions (enforce coherence):\n' +
+        others.map(i=>`- p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
+      input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
+      b.disabled = true; $('#result').hidden = true; $('#streamcard').hidden = false;
+      $('#stream').textContent = ''; $('#status').textContent = 'Re-forecasting…';
+      try {
+        const {text} = await sample(input, {onText: ({text})=>{ const el=$('#stream'); el.textContent = text; el.scrollTop = el.scrollHeight; }});
+        const m = text.match(/```json\s*([\s\S]*?)```\s*$/);
+        if (!m) throw {code:'invalid_json', message:'no JSON block', text};
+        const d = JSON.parse(m[1]);
+        hist.push({date: Date.now(), p:+d.p, lo:+d.lo, hi:+d.hi, src:'re-forecast'});
+        await ref.update({p:+d.p, lo:+d.lo, hi:+d.hi, history: hist, detail: JSON.parse(JSON.stringify(d))});
+        renderResult(Object.assign({}, d, {_history: hist}), $('#result'), 'Updated ' + new Date().toISOString().slice(0,10));
+        $('#streamcard').hidden = true; $('#status').textContent = '';
+      } catch(e){
+        $('#status').innerHTML = '<span class="err">'+esc(e && e.code ? e.code : 'Failed')+'</span>';
+        if (e && e.text) { $('#stream').textContent = e.text; $('#streamcard').hidden = false; }
+      } finally { b.disabled = false; }
+    }
+    else if (b.dataset.act==='view') {
       const snap = await ref.get();
       const body = snap.exists ? snap.data() : null;
       if (body && body.detail) {
-        const d2 = Object.assign({}, body.detail, {p: body.p, lo: body.lo, hi: body.hi});
+        const d2 = Object.assign({}, body.detail, {p: body.p, lo: body.lo, hi: body.hi, _history: body.history});
         if (body.revision) d2.coherence = 'REVISED ' + (body.revision.date||'') + ' (was ' + pct(+body.p_original||0) + '): ' + (body.revision.reason||'');
         renderResult(d2, $('#result'),
           'Logged ' + new Date(body.created||0).toISOString().slice(0,10) + ' · ' + (body.status||'pending'));
@@ -252,7 +304,15 @@ document.addEventListener('click', async ev=>{
       } else $('#status').textContent = 'No stored detail for that entry.';
     }
     else if (b.dataset.act==='del') await ref.delete();
-    else await ref.update({status: b.dataset.act, resolved_at: Date.now()});
+    else {
+      const snapR = await ref.get(); const bodyR = snapR.exists ? snapR.data() : {};
+      const o = b.dataset.act==='yes' ? 1 : 0;
+      const histR = Array.isArray(bodyR.history) ? bodyR.history : [];
+      const path = histR.map(x=>({date:x.date, brier:+(((+x.p)-o)**2).toFixed(4)}));
+      const upd = {status: b.dataset.act, resolved_at: Date.now()};
+      if (path.length) { upd.brier_path = path; upd.brier_mean_path = +(path.reduce((s,x)=>s+x.brier,0)/path.length).toFixed(4); }
+      await ref.update(upd);
+    }
   } catch(e){ $('#status').textContent = 'Ledger write failed: '+ (e.code||'error'); }
 });
 
