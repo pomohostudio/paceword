@@ -31,6 +31,9 @@ import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
 const API_KEY = process.env.FRED_API_KEY;
+// When the platform's egress proxy injects the api_key query parameter itself
+// (an environment "API credential"), the server must NOT require or append a key.
+const PROXY_AUTH = process.env.FRED_PROXY_AUTH === "1";
 const BASE = "https://api.stlouisfed.org/fred";
 const DB_DIR = join(homedir(), ".local", "share", "fred-mcp");
 const DB_PATH = process.env.FRED_DB_PATH || join(DB_DIR, "fred.db");
@@ -40,12 +43,14 @@ const EXPORT_DIR = resolve(process.cwd(), "fred-exports");
 const OPEN_VINTAGE = "9999-12-31";
 const EARLIEST_VINTAGE = "1776-07-04";
 
-if (!API_KEY) {
-  console.error("fred-mcp: FRED_API_KEY is not set. Refusing to start.");
+if (!API_KEY && !PROXY_AUTH) {
+  console.error(
+    "fred-mcp: FRED_API_KEY is not set (and FRED_PROXY_AUTH!=1). Refusing to start."
+  );
   process.exit(1);
 }
 
-const redact = (t) => String(t).split(API_KEY).join("[REDACTED]");
+const redact = (t) => (API_KEY ? String(t).split(API_KEY).join("[REDACTED]") : String(t));
 
 /* ------------------------------------------------------------------ store */
 
@@ -90,7 +95,7 @@ const insertMeta = db.prepare(
 
 async function fredGet(path, params) {
   const url = new URL(`${BASE}/${path}`);
-  url.searchParams.set("api_key", API_KEY);
+  if (API_KEY) url.searchParams.set("api_key", API_KEY);
   url.searchParams.set("file_type", "json");
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
