@@ -36,6 +36,18 @@ norm. Every update entry records the data-watch result even when negative
 The first big one: **V-Dem's ~March 2027 release is the first independent expert coding
 of 2026 Iran** — the first outside check on everything this project coded by hand.
 
+### Step 1c — RESEARCH WATCH (every cycle)
+
+Search for movement in the field itself: new ForecastBench results, the latest Metaculus
+AI Benchmark quarterly (pros vs bots), new AIA-class systems or LLM-forecasting papers,
+ViEWS challenge results — and PUBLIC FORECASTS from top human teams (Samotsvety, Swift
+Centre, Good Judgment/FRI) relevant to Iran or regime stability. Their sites are
+egress-blocked from the audit environment; search snippets quote them, which is how their
+track record entered this project. When the field picture changes, update HYBRID.md's
+research tables; when a top team publishes a relevant probability, log it as an
+independent HUMAN anchor voice in the ensemble. Record the result each cycle even when
+negative ("no field movement; no relevant public forecasts found").
+
 ## Annual events
 
 - **V-Dem release (~March):** re-run `scripts/improve.py` on the new dataset; re-anchor

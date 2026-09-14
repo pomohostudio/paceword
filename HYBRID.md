@@ -38,12 +38,45 @@ judgement increment written down.
 ## What that means for this tool
 
 Our walk-forward reference class **is** the outside view — the thing superforecasters do
-*first*. What it lacks is everything they do *second*: retrieval, reconciliation,
-calibration, updating. Those are now buildable. The pipeline below is the AIA recipe
-executed by one analyst-LLM session — with the honesty caveat that its "multiple
-perspectives" come from one source and are therefore correlated, exactly the
-IRT-independence problem documented in `project-2026.py`. This is a demonstration of the
-architecture, not a claim of superforecaster status. Status is earned on a scored ledger.
+*first*. Everything they do *second* has since been built into this project
+(status as of 2026-09-14):
+
+- **Retrieval** — the monthly Routine's step 1 (news), step 2 (data watch), step 3
+  (research watch), each logged even when negative.
+- **Reconciliation** — the panel aggregation of Version 3.1 plus the species rule below.
+- **Calibration** — the guards in this file, plus the ledger: every number is dated,
+  pre-registered, and Brier-scored at resolution (the app scores in place).
+- **Updating** — three durable Routines (monthly cycle, quarterly re-poll, resolution
+  day) that fire this session with context intact.
+
+The remaining honesty caveat is narrower than it was: LLM voices from one model family
+are correlated, exactly the IRT-independence problem documented in `project-2026.py`.
+The species rule below is the mitigation. Superforecaster *status* is still earned only
+on the scored ledger.
+
+## Panel composition — the species rule
+
+Cross-referencing more sources helps exactly insofar as their ERRORS are independent.
+Adding more voices of the same kind adds confidence faster than it adds information.
+So the ensemble is organised by SPECIES of forecaster, and aggregation happens at the
+species level (median across species-level numbers; extremizing only when at least two
+genuinely independent species agree on direction):
+
+1. **Statistical tool** — the walk-forward reference-class number (scenario-weighted).
+   Errors come from data coverage and construct choices; no narrative bias.
+2. **LLM panel** — median of the blind multi-model panel. All Claude-family in this
+   environment, so this is ONE species however many models vote; cross-provider models
+   would split it into two, and are not available here.
+3. **Crowd / market** — frozen Metaculus/Polymarket/Manifold/INFER values from
+   forecastbench-datasets snapshots, and the private Manifold market's pre-disclosure
+   price when it exists. Weight up with liquidity.
+4. **Human anchors** — the project owner's blind number, invited friends, and published
+   probabilities from top teams (Samotsvety, Swift Centre, GJ/FRI) when search surfaces
+   one on a matching question.
+
+A within-species disagreement is a fact about that method; a BETWEEN-species disagreement
+is the most informative signal the ensemble produces — investigate it before averaging
+it away.
 
 ---
 
