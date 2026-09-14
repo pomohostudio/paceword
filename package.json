@@ -1,12 +1,16 @@
 {
   "name": "fred-mcp",
   "version": "2.0.0",
-  "description": "Local cache-and-query MCP server over the FRED API, with full vintage (as-published) support.",
   "type": "module",
-  "bin": { "fred-mcp": "./server.js" },
-  "engines": { "node": ">=22.5" },
+  "bin": {
+    "fred-mcp": "server.js"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.0",
-    "zod": "^3.25.0"
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.6.5"
+  },
+  "description": "Local cache-and-query MCP server over the FRED API, with full vintage (as-published) support.",
+  "engines": {
+    "node": ">=22.5"
   }
 }
