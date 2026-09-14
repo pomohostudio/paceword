@@ -48,6 +48,18 @@ research tables; when a top team publishes a relevant probability, log it as an
 independent HUMAN anchor voice in the ensemble. Record the result each cycle even when
 negative ("no field movement; no relevant public forecasts found").
 
+### FRED (point-in-time macro data)
+
+A local `fred` MCP server (see `docs/FRED.md`) provides FRED series with full vintage
+history — `as_of` queries return data *as published on a date*, the only honest basis
+for macro backtests. It runs on the owner's machine, so it is present in local sessions
+and absent in cloud ones; use it whenever present. Project uses: cross-check resolution
+criterion B (search for the World Bank Iran-inflation mirror via `fred_search_series`
+before trusting an ID); vintage-honest inputs for any future macro covariates in the
+forecaster; empire-question increments (DGS10, CPIAUCSL, FEDFUNDS). The rule that
+matters most, now failure mode #8 in the forecast agent: never test against
+current-vintage data.
+
 ## Annual events
 
 - **V-Dem release (~March):** re-run `scripts/improve.py` on the new dataset; re-anchor

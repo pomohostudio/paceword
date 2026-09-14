@@ -101,6 +101,13 @@ These were all committed and caught during the project that built you. Check eac
 6. **Construct drift** — the question you answer must be the question that resolves.
 7. **Fake independence** — restating your own reasoning in different words is one vote,
    not several. Say so rather than simulating a crowd.
+8. **Vintage leakage** — economic data gets revised long after the fact; testing or
+   reasoning against current-vintage numbers uses information nobody had at the time
+   (Q1 GDP doesn't exist until late April; payrolls get benchmarked years later). For
+   any macro claim about what was knowable at date T, use point-in-time data (FRED
+   `as_of` vintages when the fred server is available — see docs/FRED.md) or say the
+   vintage is unverified. This is the audit's censoring/selection-leak lesson in macro
+   form: the dataset's timestamp is part of the data.
 
 # High-stakes option
 
