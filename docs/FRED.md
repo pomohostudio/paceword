@@ -275,3 +275,37 @@ vintage retrieval end to end.
 Open upgrade: the credential dropdown offered "Body parameter". If FRED accepts POST
 with a form-encoded api_key, the server can POST and let the vault inject the key,
 removing FRED_API_KEY from env vars entirely (true Path A). Test from a new session.
+
+---
+
+## VERIFIED WORKING — 2026-09-14
+
+Fix that worked: Network access = **Custom** with `api.stlouisfed.org` added and the
+"default list of common package managers" box left checked (Custom is additive, so
+the npx install of the fred branch keeps working). The API-credential route did NOT
+open the host reliably across sessions — the allowlist is the authoritative gate.
+
+First live run (new session):
+- fred_fetch UNRATE all_vintages: 2,198 rows, 1948-01 → 2026-08.
+- fred_query as_of 2020-06-01 → newest row 2020-04-01 (May 2020 wasn't published
+  until 2020-06-05). Point-in-time logic confirmed: 868 vintage rows vs 944 current.
+- April 2020: 14.7 first print → 14.8 current, drift entirely from January BLS
+  seasonal-adjustment reruns.
+
+### The lesson the run surfaced — measurement error >> revision error
+
+The vintage revisions on April 2020 UNRATE are ~0.1pp (noise from seasonal-factor
+recomputation). But BLS stated the COVID misclassification of temporary-layoff
+workers made the *true* April rate ~5pp higher (~20% vs 14.7%), and deliberately did
+NOT correct the published series — so no vintage anywhere reflects it. Implication for
+this project: vintage honesty (failure mode #8) protects against hindsight, but the
+dominant error in a macro series can be a *construct/classification* problem no
+vintage captures. When a series has a known measurement break, the error bar is the
+break, not the revisions. This is the audit's construct-validity lesson (phi=0.098,
+Chinese-Revolution-vs-Great-Leap) in macro form. Log both when using a series in a
+forecast.
+
+### Now wired into the project
+- Criterion B (Iran inflation) resolution: FRED mirror of the series, vintage-honest,
+  available in Routine-fired sessions (env-level allowlist + .mcp.json on main).
+- Empire/COFER question increments: DGS10, CPIAUCSL, FEDFUNDS via as_of queries.
