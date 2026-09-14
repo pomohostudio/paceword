@@ -48,3 +48,36 @@ empirical verdict of this entire project. Publish it either way.
 **2026-08-10 — baseline.** Panel ensemble 0.18 [0.10, 0.35]. Cruxes: IRGC-fracture
 reporting credibility; creeping-coup construct discount. Market anchors: Polymarket
 leadership-change 2wk hazard cooled 10.5%→3.2% Apr→Jul; permanent-peace 1.6%.
+
+**2026-09-14 — update 1** (+35 days). Retrieval on the two cruxes:
+
+*Crux (a), IRGC cohesion — resolves toward "held."* Expert consensus (Alfoneh, AGSIW:
+"I have not observed signs of defections within the security apparatus"); nationalism
+under foreign attack sustaining armed-forces cohesion; IRGC-IO threats against desertion
+reveal anxiety but no unit-level fractures materialised in Aug–Sep. The opposition-sourced
+fracture reports (NCRI/IranIntl) weighted by two panelists were not corroborated. This
+was the panel's largest disagreement and it moves toward Opus's reading.
+
+*Crux (b), creeping coup — no new signal.* Mojtaba consolidated ("regime quickly
+consolidated under a new set of hard-liners"); formally in office since March 8; no
+figurehead structure reported.
+
+*War:* Pakistan-mediated ceasefire + June MOU still suppressing large-scale fighting
+at day 198; strikes traded over violations; no settlement. No escalation toward
+ground invasion (the only foreign-imposed replacement mechanism).
+
+Increments (log-odds on 0.18): cohesion held one more month under max stress −0.20;
+large-scale fighting stayed halted −0.05; 35 uneventful days of a front-loaded hazard
+window −0.05. Net −0.30.
+
+**Ensemble: 0.18 → 0.14  [0.08, 0.28].** Exceeds the soft ±0.10 monthly norm because
+the period resolved the panel's principal crux, which is the stated exception.
+
+Sources: [Britannica 2026 Iran war](https://www.britannica.com/event/2026-Iran-war) ·
+[CFR Global Conflict Tracker](https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran) ·
+[GlobalSecurity Day-198 OPREP](https://www.globalsecurity.org/military/ops/iran-war-oprep.htm) ·
+[CSM on quelled protests](https://www.csmonitor.com/World/Middle-East/2026/0331/iran-war-irgc-basij-intimidation-protests) ·
+[Critical Threats collapse-indicators tracker](https://www.criticalthreats.org/analysis/indicators-of-iranian-regime-collapse) ·
+[FDD/LWJ on defection fears](https://www.fdd.org/analysis/2026/01/12/tehran-regime-fears-defections-as-irans-nationwide-movement-defies-containment/)
+
+Panel re-poll: not due (quarterly; next ~2026-11). Market price: pending market creation.
