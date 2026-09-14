@@ -41,6 +41,19 @@ Also score criteria B (IMF WEO inflation) and C (UCDP/PRIO deaths) for the compo
 The comparison of the kernel's score against the hybrid/ensemble series is the final
 empirical verdict of this entire project. Publish it either way.
 
+## Automation (as of 2026-09-14)
+
+The cadence is held by three durable Routines bound to the originating Claude session
+(they survive container recycling and fire the session with context intact):
+
+- **Monthly runbook cycle** — 14th of each month (trig_01RyjRX5mLob4if4ZpaLGTh5)
+- **Quarterly panel re-poll** — Feb/May/Aug/Nov 14th (trig_01RznzGXuQzmqfXuHy9asCvW)
+- **Resolution-day scoring** — one-shot, 2029-08-09 (trig_01N5nb5J5K4fdHHJd9kbqEsu)
+
+Fired sessions run without MCP connectors — sufficient, since the cycles need only web
+search, git, and (quarterly) subagents. Manage or pause them in the claude.ai Routines
+UI. If the session is ever deleted, recreate them from this file's prompts.
+
 ## Update log
 
 *(append below; never edit past entries)*
