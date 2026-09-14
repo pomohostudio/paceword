@@ -293,6 +293,12 @@ function renderResult(d, container, banner){
       <div class="wrap"><table><thead><tr><th>Date</th><th>p</th><th>90% interval</th><th>Source</th></tr></thead><tbody>
       ${d._history.map(x=>`<tr><td>${new Date(x.date).toISOString().slice(0,10)}</td><td>${pct(+x.p)}</td>
         <td>${pct(+x.lo)} – ${pct(+x.hi)}</td><td>${esc(x.src||'')}</td></tr>`).join('')}</tbody></table></div></div>`:''}
+    ${Array.isArray(d.fred)&&d.fred.length?`<div class="sect"><h2>FRED data <span class="small">(deposited by the weekly sweep; vintage-honest)</span></h2>
+      <div class="wrap"><table><thead><tr><th>Series</th><th>Latest</th><th>Revision note</th></tr></thead><tbody>
+      ${d.fred.map(f=>`<tr><td>${esc(f.title||f.series||'')}${f.series?` <span class="small">(${esc(f.series)})</span>`:''}</td>
+        <td>${esc(String(f.latest??''))}${f.unit?' '+esc(f.unit):''}${f.date?` <span class="small">@ ${esc(f.date)}</span>`:''}</td>
+        <td class="small">${esc(f.revision||'')}</td></tr>`).join('')}
+      </tbody></table></div></div>`:''}
     ${d.coherence?`<div class="sect"><h2>Coherence</h2><p class="small">${esc(d.coherence)}</p></div>`:''}
     <div class="sect"><h2>Honesty</h2><p class="small">${esc(d.honesty||'')}</p></div>`;
   container.hidden = false;
