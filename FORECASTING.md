@@ -147,6 +147,18 @@ Result: P(regime replaced by 2029-08-09) = 0.17 [0.09, 0.32]; composite ≈ 0.48
 [0.35, 0.62]. Near the kernel's registered 0.4976 — but decomposable, arguable,
 and updatable, which is the entire difference between a number and a forecast.
 
+## The agent
+
+The whole methodology is packaged as a reusable Claude Code agent:
+**`.claude/agents/forecaster.md`**. Install it once and any session can forecast on
+request ("will X happen by Y?") with the full discipline — sharpened resolvable
+question, outside view first, log-odds increments, crowd anchors, calibration guards,
+and the seven audited failure modes checked by name.
+
+Install: copy the file to `~/.claude/agents/` (available in every project) or to a
+repo's `.claude/agents/` (available in that repo's sessions). Then ask, e.g.
+"use the forecaster agent: will the EU pass the AI liability directive by end of 2027?"
+
 ## The protocol
 
 1. **Define a resolvable event.** Not "will Iran decline" but *"will the incumbent regime
