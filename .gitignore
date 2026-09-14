@@ -1,0 +1,5 @@
+node_modules/
+*.db
+*.db-*
+fred-exports/
+.env
