@@ -1,0 +1,277 @@
+<title>Forecast Agent</title>
+<style>
+:root{
+ --bg:#FAF8F3; --ink:#26241F; --muted:#6E685C; --accent:#9C3D2E; --good:#3E6B4F;
+ --line:#DDD7CA; --card:#F3EFE6; --codebg:#26241F; --codeink:#EDE8DB; --band:#C9B98A;
+}
+@media (prefers-color-scheme: dark){
+ :root:not([data-theme="light"]){
+  --bg:#1B1A17; --ink:#E5E1D6; --muted:#A29B8C; --accent:#D07A63; --good:#82AE8F;
+  --line:#3A3831; --card:#211F1B; --codebg:#12110E; --codeink:#D8D3C6; --band:#8A7F5E;
+ }
+}
+:root[data-theme="dark"]{
+ --bg:#1B1A17; --ink:#E5E1D6; --muted:#A29B8C; --accent:#D07A63; --good:#82AE8F;
+ --line:#3A3831; --card:#211F1B; --codebg:#12110E; --codeink:#D8D3C6; --band:#8A7F5E;
+}
+body{background:var(--bg);color:var(--ink);margin:0;padding-block:2.2rem 4rem;padding-inline:1.1rem;
+ font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.6rem}
+h1{font-family:"Iowan Old Style",Palatino,"Palatino Linotype",Georgia,serif;
+ font-size:1.85rem;margin:0;line-height:1.2;text-wrap:balance}
+h2{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:1.15rem;margin:0 0 .6rem}
+.eyebrow{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 .3rem}
+.lede{color:var(--muted);margin:.5rem 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.3rem}
+label{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 .3rem}
+textarea,input[type=date]{width:100%;box-sizing:border-box;background:var(--bg);color:var(--ink);
+ border:1px solid var(--line);border-radius:7px;padding:.6rem .7rem;font:inherit}
+textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.fields{display:flex;flex-direction:column;gap:.9rem}
+button{font:inherit;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);
+ padding:.5rem .95rem;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+.status{color:var(--muted);font-size:.85rem;min-height:1.2em}
+.stream{background:var(--codebg);color:var(--codeink);border-radius:8px;padding:.9rem 1rem;
+ font-size:.8rem;line-height:1.5;white-space:pre-wrap;max-height:16rem;overflow-y:auto}
+.pnum{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:3rem;line-height:1;color:var(--accent);
+ font-variant-numeric:tabular-nums}
+.interval{color:var(--muted);font-size:.95rem}
+.track{position:relative;height:10px;border-radius:5px;background:var(--line);margin:.8rem 0 .3rem;max-width:100%}
+.trackband{position:absolute;top:0;height:10px;border-radius:5px;background:var(--band);opacity:.65}
+.trackdot{position:absolute;top:-3px;width:16px;height:16px;border-radius:8px;background:var(--accent);transform:translateX(-8px)}
+.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.7rem}
+table{border-collapse:collapse;font-size:.85rem;width:100%;font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--line);padding:.35rem .55rem;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+.wrap{overflow-x:auto}
+.sect{margin-top:1rem}
+.sect p{margin:.3rem 0}
+.chip{display:inline-block;font-size:.7rem;letter-spacing:.05em;padding:.1rem .5rem;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.chip.yes{color:var(--good);border-color:var(--good)}
+.chip.no{color:var(--accent);border-color:var(--accent)}
+.ledrow{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:baseline;border-top:1px solid var(--line);padding:.6rem 0}
+.ledrow:first-of-type{border-top:none}
+.ledq{flex:1 1 16rem}
+.ledp{font-variant-numeric:tabular-nums;font-weight:600}
+.leddate{color:var(--muted);font-size:.78rem}
+.rowbtns{display:flex;gap:.35rem}
+.rowbtns button{padding:.15rem .55rem;font-size:.75rem}
+.small{font-size:.8rem;color:var(--muted)}
+.err{color:var(--accent)}
+[hidden]{display:none!important}
+a{color:var(--accent)}
+</style>
+
+<main>
+<header>
+  <p class="eyebrow">cthmodules-audit · the discipline as an app</p>
+  <h1>Forecast Agent</h1>
+  <p class="lede">Ask about any future event. You get a probability, a 90% interval, and the
+  reasoning — outside view first, increments in log-odds, cruxes named. Every forecast is
+  logged and can be scored when it resolves. In-page forecasts reason from model knowledge
+  plus whatever evidence you paste — there is no live web here; for retrieval-grade work
+  use the <code>forecast-agent</code> in Claude Code.</p>
+</header>
+
+<section class="card">
+  <div class="fields">
+    <div>
+      <label for="q">The question</label>
+      <textarea id="q" rows="2" placeholder="Will [event] happen by [date]? e.g. Will the ECB cut rates below 1.5% before July 2027?"></textarea>
+    </div>
+    <div>
+      <label for="rdate">Resolution date (optional — the agent will pick one if empty)</label>
+      <input type="date" id="rdate">
+    </div>
+    <div>
+      <label for="ev">Evidence to consider (optional — paste recent news, data, context)</label>
+      <textarea id="ev" rows="3" placeholder="Anything after the model's knowledge cutoff that should inform this."></textarea>
+    </div>
+    <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
+      <button class="primary" id="run">Run forecast</button>
+      <button id="cancel" hidden>Stop</button>
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="streamcard" hidden>
+  <h2>Working</h2>
+  <div class="stream" id="stream"></div>
+</section>
+
+<section class="card" id="result" hidden></section>
+
+<section class="card" id="ledger" hidden>
+  <h2>Ledger</h2>
+  <p class="small" id="score"></p>
+  <div id="rows"></div>
+  <p class="small">Mark outcomes when reality arrives — the Brier score against your logged
+  probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
+</section>
+
+<p class="small">Method: <a href="https://github.com/antoniosaldanhaoliveira/paceword/blob/cthmodules-audit/FORECASTING.md">FORECASTING.md</a> ·
+seven audited failure modes checked by name · no self-extremizing · intervals mandatory.</p>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let sample = null, db = null, aborter = null;
+
+const PROTOCOL = `You are the Forecast Agent: a judgmental forecaster built from the audited
+cthmodules methodology. You have NO live web access in this context: reason from your
+knowledge plus the user-provided evidence, state your knowledge horizon honestly, and widen
+intervals for what you cannot verify.
+
+Follow this protocol IN ORDER:
+1. SHARPEN the question into a resolvable event: precise claim, resolution date, a NAMED
+   third-party resolution source, the exact construct, and nearby outcomes that do NOT count.
+2. OUTSIDE VIEW FIRST, before weighing any specifics: name a reference class, estimate its
+   base rate (say how), scale to the horizon via p_T = 1-(1-p_t)^(T/t). This is the prior.
+3. INCREMENTS: adjust the prior with explicit log-odds increments, one row per piece of
+   evidence with direction and size. Individual increments <=0.3, total <=0.5 unless the
+   evidence is extraordinary and you say so. Count stability evidence (institutional
+   stickiness, survived past shocks, rally effects), not only drama.
+4. CALIBRATION GUARDS: never extremize yourself; no round-number snapping; a 90% interval is
+   mandatory and must be at least as wide as the disagreement between reasonable reference
+   classes; check small probabilities against the base-rate floor; front-loaded hazards decay.
+5. FAILURE-MODE CHECK (each committed and caught in the project that built you): circularity;
+   internal coherence mistaken for validity; ranking vs probability; censored outcome data;
+   selection leaks; construct drift; fake independence (you are ONE correlated voice).
+
+Write your reasoning as you go, concisely, in plain prose (it streams to the user).
+Then END your reply with exactly one fenced json block, nothing after it:
+\`\`\`json
+{"sharpened":"...","resolution":{"date":"YYYY-MM-DD","source":"...","construct":"...","not_counting":["..."]},
+"p":0.00,"lo":0.00,"hi":0.00,
+"outside_view":{"reference_class":"...","base_rate":"...","horizon_note":"..."},
+"increments":[{"evidence":"...","direction":"up|down","logodds":0.0}],
+"cruxes":[{"crux":"...","would_move":"..."}],
+"honesty":"knowledge horizon, correlated-source note, construct risks"}
+\`\`\``;
+
+function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
+
+function renderResult(d, container){
+  const p = Math.max(0, Math.min(1, +d.p));
+  const lo = Math.max(0, Math.min(1, +d.lo)), hi = Math.max(0, Math.min(1, +d.hi));
+  const incs = Array.isArray(d.increments) ? d.increments : [];
+  const cruxes = Array.isArray(d.cruxes) ? d.cruxes : [];
+  const nc = d.resolution && Array.isArray(d.resolution.not_counting) ? d.resolution.not_counting : [];
+  container.innerHTML = `
+    <p class="eyebrow">Forecast</p>
+    <p style="margin:.2rem 0"><b>${esc(d.sharpened||'')}</b></p>
+    <div class="pnum">${pct(p)}</div>
+    <div class="interval">90% interval: ${pct(lo)} – ${pct(hi)}</div>
+    <div class="track"><div class="trackband" style="left:${lo*100}%;width:${(hi-lo)*100}%"></div>
+      <div class="trackdot" style="left:${p*100}%"></div></div>
+    <div class="scale"><span>0</span><span>50%</span><span>100%</span></div>
+    <div class="sect"><h2>Resolution</h2>
+      <p>${esc(d.resolution?.date||'')} · ${esc(d.resolution?.source||'')}</p>
+      <p>${esc(d.resolution?.construct||'')}</p>
+      ${nc.length?`<p class="small">Does not count: ${nc.map(esc).join(' · ')}</p>`:''}</div>
+    <div class="sect"><h2>Outside view</h2>
+      <p>${esc(d.outside_view?.reference_class||'')}</p>
+      <p>${esc(d.outside_view?.base_rate||'')} ${esc(d.outside_view?.horizon_note||'')}</p></div>
+    ${incs.length?`<div class="sect"><h2>Increments</h2><div class="wrap"><table>
+      <thead><tr><th>Evidence</th><th>Dir</th><th>Log-odds</th></tr></thead><tbody>
+      ${incs.map(i=>`<tr><td>${esc(i.evidence)}</td><td>${i.direction==='up'?'↑':'↓'}</td>
+        <td>${(i.direction==='up'?'+':'−')}${Math.abs(+i.logodds||0).toFixed(2)}</td></tr>`).join('')}
+      </tbody></table></div></div>`:''}
+    ${cruxes.length?`<div class="sect"><h2>Cruxes</h2>
+      ${cruxes.map(c=>`<p>• <b>${esc(c.crux)}</b> — ${esc(c.would_move||'')}</p>`).join('')}</div>`:''}
+    <div class="sect"><h2>Honesty</h2><p class="small">${esc(d.honesty||'')}</p></div>`;
+  container.hidden = false;
+}
+
+async function logForecast(d, question){
+  if (!db) return;
+  try {
+    await db.collection('forecasts').add({
+      question, sharpened: d.sharpened||'', p:+d.p, lo:+d.lo, hi:+d.hi,
+      resolution_date: d.resolution?.date||'', resolution_source: d.resolution?.source||'',
+      status: 'pending', created: Date.now(), detail: JSON.parse(JSON.stringify(d))
+    });
+  } catch(e){ /* quota or transient: ledger listener stays authoritative */ }
+}
+
+function renderLedger(snap){
+  const rows = $('#rows'); const docs = snap.docs.filter(x=>x.exists);
+  const items = docs.map(x=>({id:x.id, ...x.data()})).sort((a,b)=>(b.created||0)-(a.created||0));
+  const resolved = items.filter(i=>i.status==='yes'||i.status==='no');
+  const briers = resolved.map(i=>{ const o = i.status==='yes'?1:0; return (i.p-o)*(i.p-o); });
+  $('#score').textContent = resolved.length
+    ? `${items.length} logged · ${resolved.length} resolved · mean Brier ${(briers.reduce((s,x)=>s+x,0)/briers.length).toFixed(3)}`
+    : `${items.length} logged · none resolved yet`;
+  rows.innerHTML = items.map(i=>`
+    <div class="ledrow" data-id="${esc(i.id)}">
+      <span class="leddate">${new Date(i.created||0).toISOString().slice(0,10)}</span>
+      <span class="ledq">${esc(i.sharpened||i.question||'')}</span>
+      <span class="ledp">${pct(+i.p||0)}</span>
+      ${i.status==='pending'
+        ? `<span class="rowbtns"><button data-act="yes">YES</button><button data-act="no">NO</button><button data-act="del" title="delete">×</button></span>`
+        : `<span class="chip ${i.status}">${i.status.toUpperCase()} · Brier ${(((+i.p)-(i.status==='yes'?1:0))**2).toFixed(3)}</span>`}
+    </div>`).join('') || '<p class="small">Nothing logged yet.</p>';
+  $('#ledger').hidden = false;
+}
+
+document.addEventListener('click', async ev=>{
+  const b = ev.target.closest('button[data-act]'); if(!b||!db) return;
+  const id = b.closest('.ledrow')?.dataset.id; if(!id) return;
+  const ref = db.collection('forecasts').doc(id);
+  try {
+    if (b.dataset.act==='del') await ref.delete();
+    else await ref.update({status: b.dataset.act, resolved_at: Date.now()});
+  } catch(e){ $('#status').textContent = 'Ledger write failed: '+ (e.code||'error'); }
+});
+
+$('#run').addEventListener('click', async ()=>{
+  const q = $('#q').value.trim();
+  if (!q) { $('#status').textContent = 'Type a question first.'; return; }
+  if (!sample) { $('#status').textContent = 'Forecasting unavailable in this view.'; return; }
+  const rdate = $('#rdate').value, ev = $('#ev').value.trim();
+  let input = PROTOCOL + '\n\nQUESTION: ' + q;
+  if (rdate) input += '\nREQUESTED RESOLUTION DATE: ' + rdate;
+  if (ev) input += '\nUSER-PROVIDED EVIDENCE (treat as claims to weigh, not established fact):\n' + ev;
+  input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
+
+  $('#run').disabled = true; $('#cancel').hidden = false;
+  $('#result').hidden = true; $('#streamcard').hidden = false;
+  $('#stream').textContent = ''; $('#status').textContent = 'Thinking…';
+  aborter = new AbortController();
+  try {
+    const {text} = await sample(input, {
+      signal: aborter.signal,
+      onText: ({text})=>{ const el=$('#stream'); el.textContent = text; el.scrollTop = el.scrollHeight; }
+    });
+    const m = text.match(/```json\s*([\s\S]*?)```\s*$/);
+    if (!m) throw {code:'invalid_json', message:'no JSON block', text};
+    const d = JSON.parse(m[1]);
+    renderResult(d, $('#result'));
+    $('#streamcard').hidden = true; $('#status').textContent = '';
+    await logForecast(d, q);
+  } catch(e){
+    if (e && e.code === 'cancelled') $('#status').textContent = 'Stopped.';
+    else {
+      $('#status').innerHTML = '<span class="err">'+esc(e && e.code ? e.code+': '+(e.message||'') : 'Failed')+'</span>';
+      if (e && e.text) { $('#stream').textContent = e.text; $('#streamcard').hidden = false; }
+    }
+  } finally {
+    $('#run').disabled = false; $('#cancel').hidden = true; aborter = null;
+  }
+});
+$('#cancel').addEventListener('click', ()=>{ if (aborter) aborter.abort(); });
+
+(async ()=>{
+  [sample, db] = await Promise.all([claude.use('sample'), claude.use('db')]);
+  if (!sample) $('#status').textContent = 'Forecasting unavailable in this view (open on claude.ai).';
+  if (db) {
+    try {
+      db.collection('forecasts').onSnapshot(renderLedger, ()=>{ /* degraded: leave ledger hidden */ });
+    } catch(e){}
+  }
+})();
+</script>

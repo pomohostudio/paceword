@@ -155,6 +155,12 @@ request ("will X happen by Y?") with the full discipline — sharpened resolvabl
 question, outside view first, log-odds increments, crowd anchors, calibration guards,
 and the seven audited failure modes checked by name.
 
+There is also an app version — `app/forecast-agent.html`, published as a private
+claude.ai artifact: type a question, get the probability, interval, streamed reasoning,
+and an auto-logged ledger where outcomes are marked and Brier-scored in place. The
+in-page agent has no live retrieval (it reasons from model knowledge plus pasted
+evidence and says so); the Claude Code agent below is the retrieval-grade version.
+
 Install: copy the file to `~/.claude/agents/` (available in every project) or to a
 repo's `.claude/agents/` (available in that repo's sessions). Then ask, e.g.
 "use the forecast agent: will the EU pass the AI liability directive by end of 2027?"
