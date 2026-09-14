@@ -17,6 +17,25 @@ loop, sized at roughly one hour per month.
 4. **Log the market** price (pre- and post-update) per MARKET.md.
 5. **Publish the new ensemble number** in this file with the date. Never edit old entries.
 
+### Step 1b — DATA WATCH (every cycle)
+
+Search for newly released independent expert coding extending coverage past what the
+project last used: V-Dem (~March), Freedom House (~Feb), EIU (~Feb), ERT, Polity/GWF
+successors, UCDP, and any credible new dataset. **Reliability bar — the audit's own
+standard:** institutional source, documented multi-coder or measurement-model
+methodology, versioned releases; not single-author or advocacy-sourced codings.
+
+When a qualifying release covers 2026+: pull it via reachable GitHub mirrors
+(`vdeminstitute/vdemdata`, `xmarquez/democracyData`,
+`forecastingresearch/forecastbench-datasets`), log what it says about Iran —
+**especially any `v2regdur` reset, which bears directly on resolution criterion A** —
+re-anchor the outside view, and treat it as a crux-level event exempt from the ±0.10
+norm. Every update entry records the data-watch result even when negative
+("no new qualifying releases").
+
+The first big one: **V-Dem's ~March 2027 release is the first independent expert coding
+of 2026 Iran** — the first outside check on everything this project coded by hand.
+
 ## Annual events
 
 - **V-Dem release (~March):** re-run `scripts/improve.py` on the new dataset; re-anchor
