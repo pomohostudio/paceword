@@ -129,3 +129,22 @@ Sources: [Britannica 2026 Iran war](https://www.britannica.com/event/2026-Iran-w
 [FDD/LWJ on defection fears](https://www.fdd.org/analysis/2026/01/12/tehran-regime-fears-defections-as-irans-nationwide-movement-defies-containment/)
 
 Panel re-poll: not due (quarterly; next ~2026-11). Market price: pending market creation.
+
+**2026-09-14 — update 1a** (routine's first firing, same day as manual update 1).
+Retrieval/increments: NO-OP — duplicate of this morning's cycle; ensemble stays **0.14
+[0.08, 0.28]**. Ran the two steps added to the cycle after update 1 was written:
+
+*Data watch:* ForecastBench snapshot 2026-09-13 (fresh, yesterday) — new crowd anchors:
+Manifold "Mojtaba supreme leader on 2027-01-01" **0.80** (leadership continuity priced
+high; note construct — his personal ouster by internal succession would NOT resolve our
+criterion A); Manifold "US and Iran at war on 2027-01-01" **0.58**; Polymarket "US–Iran
+diplomatic meeting by 2027-03-31" **0.605**, "blockade ends by Oct 31" **0.365**. Crowd
+picture: war grinds on, diplomacy expected, near-term leadership stable — consistent with
+0.14 and with the resolved cohesion crux. No new expert-coding releases (next: FH/EIU
+~Feb 2027, V-Dem ~Mar 2027).
+
+*Research watch:* no Q3-2026 AIB results yet. FRI's ForecastBench extrapolation puts
+LLM–superforecaster parity ~Nov 2026 [CI Dec 2025–Jan 2028] — the parity window is now.
+New paper relevant to our panel design: "The Wisdom of Deliberating AI Crowds" (arXiv
+2512.22625) — whether deliberation improves LLM forecasts; our panel is deliberately
+non-deliberating (blind), revisit at the Nov re-poll. Field tables unchanged.
