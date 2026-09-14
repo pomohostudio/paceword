@@ -74,7 +74,8 @@ a{color:var(--accent)}
   <p class="lede">Ask about any future event. You get a probability, a 90% interval, and the
   reasoning — outside view first, increments in log-odds, cruxes named. Every forecast is
   logged and can be scored when it resolves. With your Tavily/Exa/Firecrawl connectors attached,
-  every run also performs <b>live retrieval</b>; without them it reasons from model
+  every run also performs <b>live retrieval</b> (plus live macro data from Alpha Vantage on
+  economic questions); without them it reasons from model
   knowledge plus whatever evidence you paste, and says so.</p>
 </header>
 
@@ -216,6 +217,21 @@ async function retrieve(q){
     let t = r && r.payload; if (typeof t !== 'string') t = t ? JSON.stringify(t) : '';
     if (t && t.length > 40){ used.push('Exa'); parts.push('Exa (neural/research) results:\n' + t.slice(0,2600)); }
   } catch(e){}
+  // Alpha Vantage — structured macro data, only for economic/financial questions (free-tier thrift)
+  if (/\b(inflation|cpi|gdp|dollar|reserve|currency|rate|rates|interest|treasury|yield|bond|gold|recession|fed|ecb|fx|exchange|economic|econom|stock|equit|market|price|deficit|debt|monetary)\b/i.test(q)) {
+    const av = 'Alpha Vantage MCP Server';
+    const tail = (d, n) => (Array.isArray(d) ? d.slice(0, n).map(x => `${x.date}: ${x.value}`).join(', ') : '');
+    try {
+      const r = await mcp.callTool(av, 'TREASURY_YIELD', { maturity: '10year', interval: 'monthly', datatype: 'json' });
+      const d = r && r.payload && r.payload.data;
+      if (d && d.length) { used.push('AlphaVantage'); parts.push('Alpha Vantage — US 10Y Treasury yield (%), recent monthly:\n  ' + tail(d, 8)); }
+    } catch(e){}
+    try {
+      const r = await mcp.callTool(av, 'INFLATION', { datatype: 'json' });
+      const d = r && r.payload && r.payload.data;
+      if (d && d.length) { if(!used.includes('AlphaVantage')) used.push('AlphaVantage'); parts.push('Alpha Vantage — US annual inflation (%), recent:\n  ' + tail(d, 5)); }
+    } catch(e){}
+  }
   return parts.length ? {text: parts.join('\n\n'), used} : null;
 }
 
