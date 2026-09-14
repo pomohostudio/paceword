@@ -73,9 +73,9 @@ a{color:var(--accent)}
   <h1>Forecast Agent</h1>
   <p class="lede">Ask about any future event. You get a probability, a 90% interval, and the
   reasoning — outside view first, increments in log-odds, cruxes named. Every forecast is
-  logged and can be scored when it resolves. In-page forecasts reason from model knowledge
-  plus whatever evidence you paste — there is no live web here; for retrieval-grade work
-  use the <code>forecast-agent</code> in Claude Code.</p>
+  logged and can be scored when it resolves. With your Tavily/Exa/Firecrawl connectors attached,
+  every run also performs <b>live retrieval</b>; without them it reasons from model
+  knowledge plus whatever evidence you paste, and says so.</p>
 </header>
 
 <section class="card">
@@ -129,7 +129,7 @@ seven audited failure modes checked by name · no self-extremizing · intervals 
 <script>
 const $ = s => document.querySelector(s);
 const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let sample = null, db = null, aborter = null, ledgerItems = [];
+let sample = null, db = null, mcp = null, aborter = null, ledgerItems = [];
 
 const PROTOCOL = `You are the Forecast Agent: a judgmental forecaster built from the audited
 cthmodules methodology. You have NO live web access in this context: reason from your
@@ -188,6 +188,30 @@ function spark(h){
   return `<svg width="${w}" height="${ht}" role="img" aria-label="probability over time" style="vertical-align:middle">
     <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>
     <circle r="2.6" fill="var(--accent)" cx="${pts.split(' ').pop().split(',')[0]}" cy="${pts.split(' ').pop().split(',')[1]}"/></svg>`;
+}
+
+async function retrieve(q){
+  if (!mcp) return null;
+  const parts = [], used = [];
+  try {
+    const r = await mcp.callTool('Tavily','tavily_search',{query: q.slice(0,300), max_results: 5});
+    const res = (r && r.payload && Array.isArray(r.payload.results)) ? r.payload.results : [];
+    if (res.length){ used.push('Tavily');
+      parts.push('Tavily (news/web) results:\n' + res.map(x=>`- ${x.title} — ${x.url}\n  ${(x.content||'').replace(/\s+/g,' ').slice(0,280)}`).join('\n')); }
+  } catch(e){}
+  try {
+    const r = await mcp.callTool('Firecrawl','firecrawl_search',{query: q.slice(0,300), limit: 4, sources:[{type:'news'}]});
+    const news = (r && r.payload && r.payload.data && Array.isArray(r.payload.data.news)) ? r.payload.data.news : [];
+    if (news.length){ used.push('Firecrawl');
+      parts.push('Firecrawl (dated news) results:\n' + news.map(x=>`- [${x.date||'?'}] ${x.title} — ${x.url}\n  ${(x.snippet||'').slice(0,240)}`).join('\n')); }
+  } catch(e){}
+  try {
+    const r = await mcp.callTool('Exa','web_search_exa',{query: q.slice(0,300),
+      objective:'Rank first the most recent, dated, primary-source reporting and data bearing on this question; pull concrete facts, figures and dates.', numResults: 5});
+    let t = r && r.payload; if (typeof t !== 'string') t = t ? JSON.stringify(t) : '';
+    if (t && t.length > 40){ used.push('Exa'); parts.push('Exa (neural/research) results:\n' + t.slice(0,2600)); }
+  } catch(e){}
+  return parts.length ? {text: parts.join('\n\n'), used} : null;
 }
 
 function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
@@ -335,9 +359,13 @@ document.addEventListener('click', async ev=>{
         others.map(i=>`- p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
       const evx = $('#ev').value.trim();
       if (evx) input += '\n\nNEW EVIDENCE provided now by the user (weigh with the credibility bar; treat as claims, not established fact):\n' + evx;
-      input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
       b.disabled = true; $('#result').hidden = true; $('#streamcard').hidden = false;
-      $('#stream').textContent = ''; $('#status').textContent = 'Re-forecasting…';
+      $('#stream').textContent = ''; $('#status').textContent = mcp ? 'Searching the web…' : 'Re-forecasting…';
+      const ret = await retrieve(body0.sharpened||body0.question||'');
+      if (ret) input += '\n\nLIVE RETRIEVAL (fetched moments ago via ' + ret.used.join(' + ') +
+        '; overrides the no-web-access note; cite sources in increments):\n' + ret.text;
+      input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
+      $('#status').textContent = 'Re-forecasting…';
       try {
         const {text} = await sample(input, {onText: ({text})=>{ const el=$('#stream'); el.textContent = text; el.scrollTop = el.scrollHeight; }});
         const m = text.match(/```json\s*([\s\S]*?)```\s*$/);
@@ -391,7 +419,12 @@ $('#run').addEventListener('click', async ()=>{
 
   $('#run').disabled = true; $('#cancel').hidden = false;
   $('#result').hidden = true; $('#streamcard').hidden = false;
-  $('#stream').textContent = ''; $('#status').textContent = 'Thinking…';
+  $('#stream').textContent = ''; $('#status').textContent = mcp ? 'Searching the web…' : 'Thinking…';
+  const ret = await retrieve(q);
+  if (ret) input += '\n\nLIVE RETRIEVAL (fetched moments ago via ' + ret.used.join(' + ') +
+    '; this OVERRIDES the no-web-access note above — these results are current as of today. ' +
+    'Still apply the credibility bar and cite sources by name in increments):\n' + ret.text;
+  $('#status').textContent = 'Thinking…';
   aborter = new AbortController();
   try {
     const {text} = await sample(input, {
@@ -417,7 +450,7 @@ $('#run').addEventListener('click', async ()=>{
 $('#cancel').addEventListener('click', ()=>{ if (aborter) aborter.abort(); });
 
 (async ()=>{
-  [sample, db] = await Promise.all([claude.use('sample'), claude.use('db')]);
+  [sample, db, mcp] = await Promise.all([claude.use('sample'), claude.use('db'), claude.use('mcp')]);
   if (!sample) $('#status').textContent = 'Forecasting unavailable in this view (open on claude.ai).';
   if (db) {
     try {
