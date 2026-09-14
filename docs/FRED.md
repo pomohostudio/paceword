@@ -251,3 +251,27 @@ In a new session on this environment (or an existing one after MCP reconnect):
   fetches recur; keep them scoped to the series actually needed.
 - Environment changes apply to sessions/containers started after saving; a running
   session picks the server up on its next MCP reconnect at the earliest.
+
+---
+
+## Pattern B — COMPLETE (2026-09-14)
+
+Configured and plumbing-verified. Path B (Bearer credential opens the host;
+key in env vars) since the credential form offered no query-parameter type.
+
+- Network access: **Trusted** (unchanged); `api.stlouisfed.org` reachable via an
+  API credential named FRED (Bearer, value unused — its only role is opening the host).
+- Env vars set in the environment: `FRED_PROXY_AUTH=0`, `FRED_API_KEY=<key>`.
+- `.mcp.json` on `main` runs `github:antoniosaldanhaoliveira/paceword#fred-mcp` via npx.
+- Verified from a live container: `api.stlouisfed.org` returns FRED's own 400
+  ("Variable api_key is not set") to a keyless request — host open, egress working,
+  server's node-fetch path confirmed reaching FRED.
+
+`fred_*` tools appear in the NEXT session started on this environment (.mcp.json is
+read at session start). First new session: run `fred_store_status`, then
+`fred_fetch UNRATE all_vintages=true`, then a paired `fred_query as_of` to confirm
+vintage retrieval end to end.
+
+Open upgrade: the credential dropdown offered "Body parameter". If FRED accepts POST
+with a form-encoded api_key, the server can POST and let the vault inject the key,
+removing FRED_API_KEY from env vars entirely (true Path A). Test from a new session.
