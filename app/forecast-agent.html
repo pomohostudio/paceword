@@ -1,5 +1,6 @@
 <title>Forecast Agent</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Archivo:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
 :root{
  --bg:#0B0C0E; --panel:#111318; --panel2:#0E1013; --ink:#ECEAE3; --muted:#8B8D86;
  --faint:#5E6066; --line:#22252B; --line2:#191C21; --accent:#C6D2E4; --accentdim:#7E8CA6;
@@ -7,29 +8,29 @@
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);margin:0;padding-block:3rem 6rem;padding-inline:1.15rem;
- font:15px/1.65 "Neue Haas Grotesk Text","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+ font:15px/1.62 "Archivo","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
  -webkit-font-smoothing:antialiased;letter-spacing:.01em}
 main{max-width:48rem;margin:0 auto;display:flex;flex-direction:column;gap:2.4rem}
 ::selection{background:var(--accentdim);color:#0B0C0E}
 
 /* header / hero */
 header{border-bottom:1px solid var(--line);padding-bottom:2rem}
-.eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.66rem;letter-spacing:.34em;
+.eyebrow{font-family:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.66rem;letter-spacing:.34em;
  text-transform:uppercase;color:var(--accentdim);margin:0 0 1.1rem}
-h1{font-weight:300;font-size:clamp(2.1rem,6vw,3.2rem);line-height:1.02;margin:0;
- text-transform:uppercase;letter-spacing:.16em;text-wrap:balance}
+h1{font-family:"Syne","Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(2.2rem,6.5vw,3.4rem);
+ line-height:1.0;margin:0;text-transform:uppercase;letter-spacing:.1em;text-wrap:balance}
 .lede{color:var(--muted);margin:1.3rem 0 0;max-width:40rem;font-size:.98rem;letter-spacing:.005em}
 
 /* cards */
 .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
  border-radius:2px;padding:1.6rem 1.7rem}
-h2{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;font-weight:500;
+h2{font-family:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;font-weight:500;
  letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin:0 0 1.1rem;
  padding-bottom:.7rem;border-bottom:1px solid var(--line2)}
-h3{font-size:.98rem;font-weight:400;margin:.2rem 0 .4rem;letter-spacing:.01em}
+h3{font-family:"Syne","Helvetica Neue",Arial,sans-serif;font-size:1rem;font-weight:600;margin:.2rem 0 .4rem;letter-spacing:.01em}
 
 /* form */
-label{display:block;font-family:ui-monospace,monospace;font-size:.64rem;letter-spacing:.24em;
+label{display:block;font-family:"Space Mono",ui-monospace,monospace;font-size:.64rem;letter-spacing:.24em;
  text-transform:uppercase;color:var(--faint);margin:0 0 .5rem}
 textarea,input[type=date],select{width:100%;background:var(--code);color:var(--ink);
  border:1px solid var(--line);border-radius:2px;padding:.7rem .8rem;font:inherit;letter-spacing:.01em}
@@ -40,29 +41,29 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:none;border
 select{max-width:100%;flex:1 1 15rem}
 
 /* buttons */
-button{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;letter-spacing:.12em;
+button{font-family:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;letter-spacing:.12em;
  text-transform:uppercase;border-radius:2px;border:1px solid var(--line);background:transparent;
  color:var(--ink);padding:.62rem 1.1rem;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
 button:hover{border-color:var(--accentdim);color:#fff}
 button.primary{background:var(--ink);border-color:var(--ink);color:#0B0C0E;font-weight:600}
 button.primary:hover{background:#fff;border-color:#fff;color:#0B0C0E}
 button:disabled{opacity:.35;cursor:default}
-.status{font-family:ui-monospace,monospace;color:var(--muted);font-size:.72rem;letter-spacing:.08em;min-height:1.2em}
+.status{font-family:"Space Mono",ui-monospace,monospace;color:var(--muted);font-size:.72rem;letter-spacing:.08em;min-height:1.2em}
 
 /* streaming console */
 .stream{background:var(--code);color:var(--codeink);border:1px solid var(--line2);border-radius:2px;
- padding:1rem 1.15rem;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;
+ padding:1rem 1.15rem;font:12px/1.6 "Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;
  max-height:17rem;overflow-y:auto;letter-spacing:0}
 
 /* the probability — the hero */
-.pnum{font-weight:200;font-size:clamp(3.4rem,13vw,5rem);line-height:.92;color:#fff;
- font-variant-numeric:tabular-nums;letter-spacing:.02em;margin-top:.2rem}
-.interval{color:var(--muted);font-family:ui-monospace,monospace;font-size:.82rem;letter-spacing:.06em}
+.pnum{font-family:"Syne","Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(3.4rem,13vw,5.2rem);
+ line-height:.9;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.005em;margin-top:.2rem}
+.interval{color:var(--muted);font-family:"Space Mono",ui-monospace,monospace;font-size:.82rem;letter-spacing:.06em}
 .track{position:relative;height:2px;background:var(--line);margin:1.2rem 0 .4rem;max-width:100%}
 .trackband{position:absolute;top:0;height:2px;background:var(--accentdim);opacity:.5}
 .trackdot{position:absolute;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent);
  transform:translateX(-5px);box-shadow:0 0 0 4px rgba(198,210,228,.12)}
-.scale{display:flex;justify-content:space-between;color:var(--faint);font-family:ui-monospace,monospace;font-size:.64rem;letter-spacing:.1em}
+.scale{display:flex;justify-content:space-between;color:var(--faint);font-family:"Space Mono",ui-monospace,monospace;font-size:.64rem;letter-spacing:.1em}
 
 /* sections + tables */
 .sect{margin-top:1.5rem}
@@ -70,11 +71,11 @@ button:disabled{opacity:.35;cursor:default}
 .wrap{overflow-x:auto}
 table{border-collapse:collapse;font-size:.82rem;width:100%;font-variant-numeric:tabular-nums}
 th,td{border-bottom:1px solid var(--line2);padding:.45rem .6rem;text-align:left;vertical-align:top}
-th{color:var(--faint);font-family:ui-monospace,monospace;font-weight:400;font-size:.66rem;
+th{color:var(--faint);font-family:"Space Mono",ui-monospace,monospace;font-weight:400;font-size:.66rem;
  letter-spacing:.16em;text-transform:uppercase;border-bottom-color:var(--line)}
 
 /* chips */
-.chip{display:inline-block;font-family:ui-monospace,monospace;font-size:.64rem;letter-spacing:.12em;
+.chip{display:inline-block;font-family:"Space Mono",ui-monospace,monospace;font-size:.64rem;letter-spacing:.12em;
  text-transform:uppercase;padding:.15rem .55rem;border:1px solid var(--line);color:var(--muted)}
 .chip.yes{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
 .chip.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
@@ -86,7 +87,7 @@ th{color:var(--faint);font-family:ui-monospace,monospace;font-weight:400;font-si
  text-align:left;cursor:pointer;letter-spacing:.005em;border-bottom:1px solid transparent}
 .ledq:hover{color:#fff;border-bottom-color:var(--accentdim)}
 .ledp{font-variant-numeric:tabular-nums;font-weight:500;color:#fff}
-.leddate{color:var(--faint);font-family:ui-monospace,monospace;font-size:.66rem;letter-spacing:.06em}
+.leddate{color:var(--faint);font-family:"Space Mono",ui-monospace,monospace;font-size:.66rem;letter-spacing:.06em}
 .rowbtns{display:flex;gap:.4rem}
 .rowbtns button{padding:.2rem .55rem;font-size:.62rem}
 .viewbanner{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.5rem}
