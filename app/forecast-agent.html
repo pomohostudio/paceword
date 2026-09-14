@@ -1,88 +1,127 @@
 <title>Forecast Agent</title>
 <style>
 :root{
- --bg:#FAF8F3; --ink:#26241F; --muted:#6E685C; --accent:#9C3D2E; --good:#3E6B4F;
- --line:#DDD7CA; --card:#F3EFE6; --codebg:#26241F; --codeink:#EDE8DB; --band:#C9B98A;
+ --bg:#0B0C0E; --panel:#111318; --panel2:#0E1013; --ink:#ECEAE3; --muted:#8B8D86;
+ --faint:#5E6066; --line:#22252B; --line2:#191C21; --accent:#C6D2E4; --accentdim:#7E8CA6;
+ --good:#8FB79A; --bad:#C98A7C; --code:#0A0B0D; --codeink:#D7DAE0;
 }
-@media (prefers-color-scheme: dark){
- :root:not([data-theme="light"]){
-  --bg:#1B1A17; --ink:#E5E1D6; --muted:#A29B8C; --accent:#D07A63; --good:#82AE8F;
-  --line:#3A3831; --card:#211F1B; --codebg:#12110E; --codeink:#D8D3C6; --band:#8A7F5E;
- }
-}
-:root[data-theme="dark"]{
- --bg:#1B1A17; --ink:#E5E1D6; --muted:#A29B8C; --accent:#D07A63; --good:#82AE8F;
- --line:#3A3831; --card:#211F1B; --codebg:#12110E; --codeink:#D8D3C6; --band:#8A7F5E;
-}
-body{background:var(--bg);color:var(--ink);margin:0;padding-block:2.2rem 4rem;padding-inline:1.1rem;
- font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-main{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:1.6rem}
-h1{font-family:"Iowan Old Style",Palatino,"Palatino Linotype",Georgia,serif;
- font-size:1.85rem;margin:0;line-height:1.2;text-wrap:balance}
-h2{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:1.15rem;margin:0 0 .6rem}
-.eyebrow{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 .3rem}
-.lede{color:var(--muted);margin:.5rem 0 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.3rem}
-label{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 .3rem}
-textarea,input[type=date]{width:100%;box-sizing:border-box;background:var(--bg);color:var(--ink);
- border:1px solid var(--line);border-radius:7px;padding:.6rem .7rem;font:inherit}
-textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.fields{display:flex;flex-direction:column;gap:.9rem}
-button{font:inherit;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);
- padding:.5rem .95rem;cursor:pointer}
-button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-button:disabled{opacity:.5;cursor:default}
-.status{color:var(--muted);font-size:.85rem;min-height:1.2em}
-.stream{background:var(--codebg);color:var(--codeink);border-radius:8px;padding:.9rem 1rem;
- font-size:.8rem;line-height:1.5;white-space:pre-wrap;max-height:16rem;overflow-y:auto}
-.pnum{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:3rem;line-height:1;color:var(--accent);
- font-variant-numeric:tabular-nums}
-.interval{color:var(--muted);font-size:.95rem}
-.track{position:relative;height:10px;border-radius:5px;background:var(--line);margin:.8rem 0 .3rem;max-width:100%}
-.trackband{position:absolute;top:0;height:10px;border-radius:5px;background:var(--band);opacity:.65}
-.trackdot{position:absolute;top:-3px;width:16px;height:16px;border-radius:8px;background:var(--accent);transform:translateX(-8px)}
-.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.7rem}
-table{border-collapse:collapse;font-size:.85rem;width:100%;font-variant-numeric:tabular-nums}
-th,td{border:1px solid var(--line);padding:.35rem .55rem;text-align:left;vertical-align:top}
-th{background:var(--bg);font-weight:600}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;padding-block:3rem 6rem;padding-inline:1.15rem;
+ font:15px/1.65 "Neue Haas Grotesk Text","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+ -webkit-font-smoothing:antialiased;letter-spacing:.01em}
+main{max-width:48rem;margin:0 auto;display:flex;flex-direction:column;gap:2.4rem}
+::selection{background:var(--accentdim);color:#0B0C0E}
+
+/* header / hero */
+header{border-bottom:1px solid var(--line);padding-bottom:2rem}
+.eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.66rem;letter-spacing:.34em;
+ text-transform:uppercase;color:var(--accentdim);margin:0 0 1.1rem}
+h1{font-weight:300;font-size:clamp(2.1rem,6vw,3.2rem);line-height:1.02;margin:0;
+ text-transform:uppercase;letter-spacing:.16em;text-wrap:balance}
+.lede{color:var(--muted);margin:1.3rem 0 0;max-width:40rem;font-size:.98rem;letter-spacing:.005em}
+
+/* cards */
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+ border-radius:2px;padding:1.6rem 1.7rem}
+h2{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;font-weight:500;
+ letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin:0 0 1.1rem;
+ padding-bottom:.7rem;border-bottom:1px solid var(--line2)}
+h3{font-size:.98rem;font-weight:400;margin:.2rem 0 .4rem;letter-spacing:.01em}
+
+/* form */
+label{display:block;font-family:ui-monospace,monospace;font-size:.64rem;letter-spacing:.24em;
+ text-transform:uppercase;color:var(--faint);margin:0 0 .5rem}
+textarea,input[type=date],select{width:100%;background:var(--code);color:var(--ink);
+ border:1px solid var(--line);border-radius:2px;padding:.7rem .8rem;font:inherit;letter-spacing:.01em}
+textarea::placeholder{color:var(--faint)}
+textarea:focus,input:focus,select:focus,button:focus-visible{outline:none;border-color:var(--accentdim);
+ box-shadow:0 0 0 1px var(--accentdim)}
+.fields{display:flex;flex-direction:column;gap:1.1rem}
+select{max-width:100%;flex:1 1 15rem}
+
+/* buttons */
+button{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;letter-spacing:.12em;
+ text-transform:uppercase;border-radius:2px;border:1px solid var(--line);background:transparent;
+ color:var(--ink);padding:.62rem 1.1rem;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+button:hover{border-color:var(--accentdim);color:#fff}
+button.primary{background:var(--ink);border-color:var(--ink);color:#0B0C0E;font-weight:600}
+button.primary:hover{background:#fff;border-color:#fff;color:#0B0C0E}
+button:disabled{opacity:.35;cursor:default}
+.status{font-family:ui-monospace,monospace;color:var(--muted);font-size:.72rem;letter-spacing:.08em;min-height:1.2em}
+
+/* streaming console */
+.stream{background:var(--code);color:var(--codeink);border:1px solid var(--line2);border-radius:2px;
+ padding:1rem 1.15rem;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;
+ max-height:17rem;overflow-y:auto;letter-spacing:0}
+
+/* the probability — the hero */
+.pnum{font-weight:200;font-size:clamp(3.4rem,13vw,5rem);line-height:.92;color:#fff;
+ font-variant-numeric:tabular-nums;letter-spacing:.02em;margin-top:.2rem}
+.interval{color:var(--muted);font-family:ui-monospace,monospace;font-size:.82rem;letter-spacing:.06em}
+.track{position:relative;height:2px;background:var(--line);margin:1.2rem 0 .4rem;max-width:100%}
+.trackband{position:absolute;top:0;height:2px;background:var(--accentdim);opacity:.5}
+.trackdot{position:absolute;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent);
+ transform:translateX(-5px);box-shadow:0 0 0 4px rgba(198,210,228,.12)}
+.scale{display:flex;justify-content:space-between;color:var(--faint);font-family:ui-monospace,monospace;font-size:.64rem;letter-spacing:.1em}
+
+/* sections + tables */
+.sect{margin-top:1.5rem}
+.sect p{margin:.35rem 0}
 .wrap{overflow-x:auto}
-.sect{margin-top:1rem}
-.sect p{margin:.3rem 0}
-.chip{display:inline-block;font-size:.7rem;letter-spacing:.05em;padding:.1rem .5rem;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
-.chip.yes{color:var(--good);border-color:var(--good)}
-.chip.no{color:var(--accent);border-color:var(--accent)}
-.ledrow{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:baseline;border-top:1px solid var(--line);padding:.6rem 0}
+table{border-collapse:collapse;font-size:.82rem;width:100%;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line2);padding:.45rem .6rem;text-align:left;vertical-align:top}
+th{color:var(--faint);font-family:ui-monospace,monospace;font-weight:400;font-size:.66rem;
+ letter-spacing:.16em;text-transform:uppercase;border-bottom-color:var(--line)}
+
+/* chips */
+.chip{display:inline-block;font-family:ui-monospace,monospace;font-size:.64rem;letter-spacing:.12em;
+ text-transform:uppercase;padding:.15rem .55rem;border:1px solid var(--line);color:var(--muted)}
+.chip.yes{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.chip.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+
+/* ledger rows */
+.ledrow{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:baseline;border-top:1px solid var(--line2);padding:.75rem 0}
 .ledrow:first-of-type{border-top:none}
 .ledq{flex:1 1 16rem;background:none;border:none;padding:0;font:inherit;color:var(--ink);
- text-align:left;cursor:pointer;text-decoration:underline dotted var(--muted);text-underline-offset:3px}
-.ledq:hover{color:var(--accent)}
-.viewbanner{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.4rem}
-.ledp{font-variant-numeric:tabular-nums;font-weight:600}
-.leddate{color:var(--muted);font-size:.78rem}
-.rowbtns{display:flex;gap:.35rem}
-.rowbtns button{padding:.15rem .55rem;font-size:.75rem}
-.small{font-size:.8rem;color:var(--muted)}
-.err{color:var(--accent)}
-select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:.4rem .5rem;max-width:100%;flex:1 1 15rem}
-.cmpgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-.cmpcol h3{margin:.2rem 0 .3rem;font-size:.95rem}
-.cmpcol .pnum{font-size:2rem}
-.cmpdelta{margin-top:1rem;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
-@media (max-width:520px){.cmpgrid{grid-template-columns:1fr}}
+ text-align:left;cursor:pointer;letter-spacing:.005em;border-bottom:1px solid transparent}
+.ledq:hover{color:#fff;border-bottom-color:var(--accentdim)}
+.ledp{font-variant-numeric:tabular-nums;font-weight:500;color:#fff}
+.leddate{color:var(--faint);font-family:ui-monospace,monospace;font-size:.66rem;letter-spacing:.06em}
+.rowbtns{display:flex;gap:.4rem}
+.rowbtns button{padding:.2rem .55rem;font-size:.62rem}
+.viewbanner{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.5rem}
+
+/* compare */
+.cmpgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:1.1rem}
+.cmpcol{border-left:1px solid var(--line);padding-left:1rem}
+.cmpcol h3{font-size:.9rem;color:var(--muted)}
+.cmpcol .pnum{font-size:2.4rem}
+.cmpdelta{margin-top:1.1rem;padding:.7rem .9rem;border:1px solid var(--line);border-radius:2px;
+ background:var(--code);font-size:.86rem}
+@media (max-width:520px){.cmpgrid{grid-template-columns:1fr}.cmpcol{border-left:none;padding-left:0}}
+
+.small{font-size:.8rem;color:var(--muted);letter-spacing:.005em}
+.err{color:var(--bad)}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-color:var(--accentdim)}
+hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
 [hidden]{display:none!important}
-a{color:var(--accent)}
+
+/* one restrained cinematic reveal */
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){
+ #result:not([hidden]){animation:rise .5s cubic-bezier(.2,.7,.2,1)}
+ .pnum{animation:rise .7s cubic-bezier(.2,.7,.2,1)}
+}
 </style>
 
 <main>
 <header>
-  <p class="eyebrow">cthmodules-audit · the discipline as an app</p>
-  <h1>Forecast Agent</h1>
-  <p class="lede">Ask about any future event. You get a probability, a 90% interval, and the
-  reasoning — outside view first, increments in log-odds, cruxes named. Every forecast is
-  logged and can be scored when it resolves. With your Tavily/Exa/Firecrawl connectors attached,
-  every run also performs <b>live retrieval</b> (plus live macro data from Alpha Vantage on
-  economic questions); without them it reasons from model
-  knowledge plus whatever evidence you paste, and says so.</p>
+  <p class="eyebrow">Cthmodules-audit — Forecasting Class 001</p>
+  <h1>Forecast<br>Agent</h1>
+  <p class="lede">Probability with reasoning for any future event — outside view first,
+  increments in log-odds, cruxes named, every forecast logged and scored on resolution.
+  Live retrieval through Tavily, Exa and Firecrawl, with macro data from Alpha Vantage on
+  economic questions; absent those, it reasons from model knowledge plus your evidence, and says so.</p>
 </header>
 
 <section class="card">
@@ -111,14 +150,14 @@ a{color:var(--accent)}
 </section>
 
 <section class="card" id="streamcard" hidden>
-  <h2>Working</h2>
+  <h2>The Working</h2>
   <div class="stream" id="stream"></div>
 </section>
 
 <section class="card" id="result" hidden></section>
 
 <section class="card" id="ledger" hidden>
-  <h2>Ledger</h2>
+  <h2>The Ledger</h2>
   <p class="small" id="score"></p>
   <div id="rows"></div>
   <p class="small">Tip: anything typed in the Evidence box is also given to ↻ update.
@@ -128,7 +167,7 @@ a{color:var(--accent)}
 </section>
 
 <section class="card" id="compare" hidden>
-  <h2>Compare two forecasts</h2>
+  <h2>The Comparison</h2>
   <div style="display:flex;gap:.6rem;flex-wrap:wrap">
     <select id="cmpA" aria-label="First forecast"></select>
     <select id="cmpB" aria-label="Second forecast"></select>
@@ -137,12 +176,12 @@ a{color:var(--accent)}
 </section>
 
 <section class="card" id="audit" hidden>
-  <h2>Audit — is this agent biased?</h2>
+  <h2>The Audit</h2>
   <div id="auditbody"></div>
 </section>
 
 <p class="small">Method: <a href="https://github.com/antoniosaldanhaoliveira/paceword/blob/cthmodules-audit/FORECASTING.md">FORECASTING.md</a> ·
-seven audited failure modes checked by name · no self-extremizing · intervals mandatory.</p>
+seven audited failure modes checked by name — no self-extremizing — intervals mandatory.</p>
 </main>
 
 <script>
