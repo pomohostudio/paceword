@@ -117,6 +117,11 @@ a{color:var(--accent)}
   probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
 </section>
 
+<section class="card" id="audit" hidden>
+  <h2>Audit — is this agent biased?</h2>
+  <div id="auditbody"></div>
+</section>
+
 <p class="small">Method: <a href="https://github.com/antoniosaldanhaoliveira/paceword/blob/cthmodules-audit/FORECASTING.md">FORECASTING.md</a> ·
 seven audited failure modes checked by name · no self-extremizing · intervals mandatory.</p>
 </main>
@@ -136,6 +141,8 @@ Follow this protocol IN ORDER:
    third-party resolution source, the exact construct, and nearby outcomes that do NOT count.
 2. OUTSIDE VIEW FIRST, before weighing any specifics: name a reference class, estimate its
    base rate (say how), scale to the horizon via p_T = 1-(1-p_t)^(T/t). This is the prior.
+   Record the horizon-scaled outside-view probability as "statistical_prior" BEFORE any
+   increments — it is the history-only voice and is reported separately.
 3. INCREMENTS: adjust the prior with explicit log-odds increments, one row per piece of
    evidence with direction and size. Individual increments <=0.3, total <=0.5 unless the
    evidence is extraordinary and you say so. Count stability evidence (institutional
@@ -157,7 +164,8 @@ Write your reasoning as you go, concisely, in plain prose (it streams to the use
 Then END your reply with exactly one fenced json block, nothing after it:
 \`\`\`json
 {"sharpened":"...","resolution":{"date":"YYYY-MM-DD","source":"...","construct":"...","not_counting":["..."]},
-"p":0.00,"lo":0.00,"hi":0.00,
+"p":0.00,"lo":0.00,"hi":0.00,"statistical_prior":0.00,
+"market_anchors":[{"name":"only if the user-provided evidence contains market/crowd odds","p":0.00}],
 "outside_view":{"reference_class":"...","base_rate":"...","horizon_note":"..."},
 "increments":[{"evidence":"...","direction":"up|down","logodds":0.0}],
 "cruxes":[{"crux":"...","would_move":"..."}],
@@ -213,6 +221,18 @@ function renderResult(d, container, banner){
       </tbody></table></div></div>`:''}
     ${cruxes.length?`<div class="sect"><h2>Cruxes</h2>
       ${cruxes.map(c=>`<p>• <b>${esc(c.crux)}</b> — ${esc(c.would_move||'')}</p>`).join('')}</div>`:''}
+    ${(()=>{const sp=+d.statistical_prior; const rows=[];
+      if(sp===sp&&sp>0) rows.push(['Statistical prior — history only, no news',sp]);
+      rows.push(['LLM judgment — prior + evidence increments',p]);
+      (Array.isArray(d.market_anchors)?d.market_anchors:[]).forEach(a=>{const v=+a.p; if(v===v&&v>0&&a.name&&!/only if/.test(a.name)) rows.push(['Market/crowd — '+a.name, Math.max(0,Math.min(1,v))]);});
+      if(rows.length<2) return '';
+      return `<div class="sect"><h2>Species comparison</h2>
+        ${rows.map(([n,v])=>`<div style="display:flex;gap:.6rem;align-items:center;margin:.25rem 0">
+          <span class="small" style="flex:1 1 14rem">${esc(n)}</span>
+          <span class="ledp">${pct(v)}</span>
+          <span class="track" style="flex:1 1 6rem;margin:0;display:inline-block"><span class="trackdot" style="left:${v*100}%;display:inline-block"></span></span></div>`).join('')}
+        <p class="small">History's voice reads no headlines; the LLM's reads both. When they diverge widely,
+        that gap — not either number — is the finding. Bias in the news channel moves only the second voice.</p></div>`;})()}
     ${Array.isArray(d._history)&&d._history.length>1?`<div class="sect"><h2>Trajectory</h2>${spark(d._history)}
       <div class="wrap"><table><thead><tr><th>Date</th><th>p</th><th>90% interval</th><th>Source</th></tr></thead><tbody>
       ${d._history.map(x=>`<tr><td>${new Date(x.date).toISOString().slice(0,10)}</td><td>${pct(+x.p)}</td>
@@ -254,6 +274,43 @@ function renderLedger(snap){
         : `<span class="chip ${i.status}">${i.status.toUpperCase()} · Brier ${(((+i.p)-(i.status==='yes'?1:0))**2).toFixed(3)}</span>`}
     </div>`).join('') || '<p class="small">Nothing logged yet.</p>';
   $('#ledger').hidden = false;
+  renderAudit(items);
+}
+
+function renderAudit(items){
+  const res = items.filter(i=>i.status==='yes'||i.status==='no');
+  const el = $('#auditbody');
+  const singles = items.filter(i=>i.detail&&Array.isArray(i.detail.increments)&&i.detail.increments.length===1).length;
+  if (!res.length){
+    el.innerHTML = `<p class="small">Accrues as forecasts resolve. Structural checks so far:
+      ${items.length} logged · ${singles} rest on a single evidence increment${singles?' — treat those as fragile':''}.
+      Bias is invisible in any one forecast and measurable only in aggregate: once ~10 resolve, this panel
+      shows calibration (does "30%" happen 30% of the time?) and direction bias (does the agent
+      systematically over-predict change?).</p>`;
+    $('#audit').hidden = false; return;
+  }
+  const outs = res.map(i=>i.status==='yes'?1:0);
+  const ps = res.map(i=>+i.p);
+  const brier = ps.reduce((s,x,k)=>s+(x-outs[k])**2,0)/res.length;
+  const bias = ps.reduce((a,b)=>a+b,0)/res.length - outs.reduce((a,b)=>a+b,0)/res.length;
+  const bins=[[0,.2],[.2,.4],[.4,.6],[.6,.8],[.8,1.001]];
+  const rows=bins.map(([lo,hi])=>{
+    const m=res.filter((i,k)=>ps[k]>=lo&&ps[k]<hi);
+    if(!m.length) return '';
+    const o=m.reduce((s,i)=>s+(i.status==='yes'?1:0),0)/m.length;
+    const pm=m.reduce((s,i)=>s+ +i.p,0)/m.length;
+    return `<tr><td>${pct(lo)}–${pct(hi)}</td><td>${m.length}</td><td>${pct(pm)}</td><td>${pct(o)}</td><td>${(o-pm>=0?'+':'')+pct(Math.abs(o-pm))}</td></tr>`;
+  }).join('');
+  el.innerHTML = `
+    <p class="small"><b>${res.length} resolved</b> · mean Brier ${brier.toFixed(3)} (baseline 0.25)
+     · direction bias ${(bias>=0?'+':'')+(100*bias).toFixed(1)} pts
+     ${Math.abs(bias)>0.1&&res.length>=8?'<span class="err"> — systematic '+(bias>0?'over':'under')+'-prediction of YES; recalibrate</span>':''}</p>
+    <div class="wrap"><table><thead><tr><th>Predicted</th><th>n</th><th>avg p</th><th>observed</th><th>gap</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <p class="small">Reliability: each row asks "when the agent said this range, how often did it happen?"
+    Persistent positive gaps in high bins = overconfidence; ${singles} pending forecasts rest on a single
+    evidence increment. Small n makes all of this noisy — judge trends, not rows.</p>`;
+  $('#audit').hidden = false;
 }
 
 document.addEventListener('click', ev=>{
