@@ -93,16 +93,14 @@ a{color:var(--accent)}
       <label for="ev">Evidence to consider (optional — paste recent news, data, context)</label>
       <textarea id="ev" rows="3" placeholder="Anything after the model's knowledge cutoff that should inform this."></textarea>
     </div>
-    <div style="display:flex;gap:.5rem;align-items:baseline">
-      <input type="checkbox" id="histonly" style="width:auto">
-      <label for="histonly" style="display:inline;text-transform:none;letter-spacing:0;font-size:.85rem;color:var(--muted)">
-        History-only mode — forecast from world history alone: no retrieval, no current events, no pasted evidence. The pure outside-view species.</label>
-    </div>
-    <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
       <button class="primary" id="run">Run forecast</button>
+      <button id="runhist" title="Forecast from world history alone">History-only</button>
       <button id="cancel" hidden>Stop</button>
       <span class="status" id="status"></span>
     </div>
+    <p class="small" style="margin:.1rem 0 0"><b>Run forecast</b> uses everything — live news, macro data, your evidence.
+    <b>History-only</b> answers from base rates and historical analogues alone (blind to current events) — the pure outside-view, to compare against a full run.</p>
   </div>
 </section>
 
@@ -442,11 +440,11 @@ document.addEventListener('click', async ev=>{
   } catch(e){ $('#status').textContent = 'Ledger write failed: '+ (e.code||'error'); }
 });
 
-$('#run').addEventListener('click', async ()=>{
+async function runForecast(histonly){
   const q = $('#q').value.trim();
   if (!q) { $('#status').textContent = 'Type a question first.'; return; }
   if (!sample) { $('#status').textContent = 'Forecasting unavailable in this view.'; return; }
-  const rdate = $('#rdate').value, histonly = $('#histonly').checked;
+  const rdate = $('#rdate').value;
   const ev = histonly ? '' : $('#ev').value.trim();
   let input = PROTOCOL + (histonly ? HISTORY_MODE : '') + '\n\nQUESTION: ' + q;
   const priors = ledgerItems.filter(i=>i.status==='pending').slice(0,12);
@@ -456,7 +454,7 @@ $('#run').addEventListener('click', async ()=>{
   if (ev) input += '\nUSER-PROVIDED EVIDENCE (treat as claims to weigh, not established fact):\n' + ev;
   input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
 
-  $('#run').disabled = true; $('#cancel').hidden = false;
+  $('#run').disabled = true; $('#runhist').disabled = true; $('#cancel').hidden = false;
   $('#result').hidden = true; $('#streamcard').hidden = false;
   $('#stream').textContent = ''; $('#status').textContent = mcp ? 'Searching the web…' : 'Thinking…';
   const ret = histonly ? null : await retrieve(q);
@@ -483,9 +481,11 @@ $('#run').addEventListener('click', async ()=>{
       if (e && e.text) { $('#stream').textContent = e.text; $('#streamcard').hidden = false; }
     }
   } finally {
-    $('#run').disabled = false; $('#cancel').hidden = true; aborter = null;
+    $('#run').disabled = false; $('#runhist').disabled = false; $('#cancel').hidden = true; aborter = null;
   }
-});
+}
+$('#run').addEventListener('click', ()=>runForecast(false));
+$('#runhist').addEventListener('click', ()=>runForecast(true));
 $('#cancel').addEventListener('click', ()=>{ if (aborter) aborter.abort(); });
 
 (async ()=>{
