@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "fred": {
+      "command": "npx",
+      "args": ["-y", "github:antoniosaldanhaoliveira/paceword#fred-mcp"],
+      "env": {
+        "FRED_API_KEY": "${FRED_API_KEY}",
+        "FRED_PROXY_AUTH": "${FRED_PROXY_AUTH}"
+      }
+    }
+  }
+}
