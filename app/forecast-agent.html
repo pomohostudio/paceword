@@ -53,7 +53,10 @@ th{background:var(--bg);font-weight:600}
 .chip.no{color:var(--accent);border-color:var(--accent)}
 .ledrow{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:baseline;border-top:1px solid var(--line);padding:.6rem 0}
 .ledrow:first-of-type{border-top:none}
-.ledq{flex:1 1 16rem}
+.ledq{flex:1 1 16rem;background:none;border:none;padding:0;font:inherit;color:var(--ink);
+ text-align:left;cursor:pointer;text-decoration:underline dotted var(--muted);text-underline-offset:3px}
+.ledq:hover{color:var(--accent)}
+.viewbanner{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.4rem}
 .ledp{font-variant-numeric:tabular-nums;font-weight:600}
 .leddate{color:var(--muted);font-size:.78rem}
 .rowbtns{display:flex;gap:.35rem}
@@ -108,7 +111,8 @@ a{color:var(--accent)}
   <h2>Ledger</h2>
   <p class="small" id="score"></p>
   <div id="rows"></div>
-  <p class="small">Mark outcomes when reality arrives — the Brier score against your logged
+  <p class="small">Click a question to reopen its full reasoning. YES/NO = how reality resolved
+  per the entry's named criterion; that click computes the Brier score. Mark outcomes when reality arrives — the Brier score against your logged
   probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
 </section>
 
@@ -155,14 +159,15 @@ Then END your reply with exactly one fenced json block, nothing after it:
 
 function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
 
-function renderResult(d, container){
+function renderResult(d, container, banner){
   const p = Math.max(0, Math.min(1, +d.p));
   const lo = Math.max(0, Math.min(1, +d.lo)), hi = Math.max(0, Math.min(1, +d.hi));
   const incs = Array.isArray(d.increments) ? d.increments : [];
   const cruxes = Array.isArray(d.cruxes) ? d.cruxes : [];
   const nc = d.resolution && Array.isArray(d.resolution.not_counting) ? d.resolution.not_counting : [];
   container.innerHTML = `
-    <p class="eyebrow">Forecast</p>
+    ${banner?`<div class="viewbanner"><p class="eyebrow" style="margin:0">${esc(banner)}</p>
+      <button data-close-view>Close</button></div>`:`<p class="eyebrow">Forecast</p>`}
     <p style="margin:.2rem 0"><b>${esc(d.sharpened||'')}</b></p>
     <div class="pnum">${pct(p)}</div>
     <div class="interval">90% interval: ${pct(lo)} – ${pct(hi)}</div>
@@ -209,7 +214,7 @@ function renderLedger(snap){
   rows.innerHTML = items.map(i=>`
     <div class="ledrow" data-id="${esc(i.id)}">
       <span class="leddate">${new Date(i.created||0).toISOString().slice(0,10)}</span>
-      <span class="ledq">${esc(i.sharpened||i.question||'')}</span>
+      <button class="ledq" data-act="view" title="Open the full reasoning">${esc(i.sharpened||i.question||'')}</button>
       <span class="ledp">${pct(+i.p||0)}</span>
       ${i.status==='pending'
         ? `<span class="rowbtns"><button data-act="yes">YES</button><button data-act="no">NO</button><button data-act="del" title="delete">×</button></span>`
@@ -218,12 +223,24 @@ function renderLedger(snap){
   $('#ledger').hidden = false;
 }
 
+document.addEventListener('click', ev=>{
+  if (ev.target.closest('[data-close-view]')) $('#result').hidden = true;
+});
 document.addEventListener('click', async ev=>{
   const b = ev.target.closest('button[data-act]'); if(!b||!db) return;
   const id = b.closest('.ledrow')?.dataset.id; if(!id) return;
   const ref = db.collection('forecasts').doc(id);
   try {
-    if (b.dataset.act==='del') await ref.delete();
+    if (b.dataset.act==='view') {
+      const snap = await ref.get();
+      const body = snap.exists ? snap.data() : null;
+      if (body && body.detail) {
+        renderResult(body.detail, $('#result'),
+          'Logged ' + new Date(body.created||0).toISOString().slice(0,10) + ' · ' + (body.status||'pending'));
+        $('#result').scrollIntoView({behavior:'smooth'});
+      } else $('#status').textContent = 'No stored detail for that entry.';
+    }
+    else if (b.dataset.act==='del') await ref.delete();
     else await ref.update({status: b.dataset.act, resolved_at: Date.now()});
   } catch(e){ $('#status').textContent = 'Ledger write failed: '+ (e.code||'error'); }
 });
