@@ -92,6 +92,11 @@ a{color:var(--accent)}
       <label for="ev">Evidence to consider (optional — paste recent news, data, context)</label>
       <textarea id="ev" rows="3" placeholder="Anything after the model's knowledge cutoff that should inform this."></textarea>
     </div>
+    <div style="display:flex;gap:.5rem;align-items:baseline">
+      <input type="checkbox" id="histonly" style="width:auto">
+      <label for="histonly" style="display:inline;text-transform:none;letter-spacing:0;font-size:.85rem;color:var(--muted)">
+        History-only mode — forecast from world history alone: no retrieval, no current events, no pasted evidence. The pure outside-view species.</label>
+    </div>
     <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
       <button class="primary" id="run">Run forecast</button>
       <button id="cancel" hidden>Stop</button>
@@ -213,6 +218,17 @@ async function retrieve(q){
   } catch(e){}
   return parts.length ? {text: parts.join('\n\n'), used} : null;
 }
+
+const HISTORY_MODE = `
+
+HISTORY-ONLY MODE (overrides retrieval and evidence): use NOTHING from current events —
+no news, no developments from the last 24 months, no market prices. Build the forecast
+purely from world-historical base rates and structural analogues, naming each analogue
+and its dates (empires, wars, debt crises, regime spells, monetary orders — whatever the
+reference class truly is). Any increments must be STRUCTURAL (terrain, tenure, regime
+type, cycle position), never event-based. statistical_prior and final p should nearly
+coincide. Leave market_anchors empty. In "honesty", state that this is the pure
+outside-view species, produced blind to the present for comparison against a full run.`;
 
 function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
 
@@ -408,8 +424,9 @@ $('#run').addEventListener('click', async ()=>{
   const q = $('#q').value.trim();
   if (!q) { $('#status').textContent = 'Type a question first.'; return; }
   if (!sample) { $('#status').textContent = 'Forecasting unavailable in this view.'; return; }
-  const rdate = $('#rdate').value, ev = $('#ev').value.trim();
-  let input = PROTOCOL + '\n\nQUESTION: ' + q;
+  const rdate = $('#rdate').value, histonly = $('#histonly').checked;
+  const ev = histonly ? '' : $('#ev').value.trim();
+  let input = PROTOCOL + (histonly ? HISTORY_MODE : '') + '\n\nQUESTION: ' + q;
   const priors = ledgerItems.filter(i=>i.status==='pending').slice(0,12);
   if (priors.length) input += '\n\nPRIOR FORECASTS (yours, logged in this ledger — enforce coherence):\n' +
     priors.map(i=>`- [${new Date(i.created||0).toISOString().slice(0,10)}] p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
@@ -420,7 +437,7 @@ $('#run').addEventListener('click', async ()=>{
   $('#run').disabled = true; $('#cancel').hidden = false;
   $('#result').hidden = true; $('#streamcard').hidden = false;
   $('#stream').textContent = ''; $('#status').textContent = mcp ? 'Searching the web…' : 'Thinking…';
-  const ret = await retrieve(q);
+  const ret = histonly ? null : await retrieve(q);
   if (ret) input += '\n\nLIVE RETRIEVAL (fetched moments ago via ' + ret.used.join(' + ') +
     '; this OVERRIDES the no-web-access note above — these results are current as of today. ' +
     'Still apply the credibility bar and cite sources by name in increments):\n' + ret.text;
@@ -436,7 +453,7 @@ $('#run').addEventListener('click', async ()=>{
     const d = JSON.parse(m[1]);
     renderResult(d, $('#result'));
     $('#streamcard').hidden = true; $('#status').textContent = '';
-    await logForecast(d, q);
+    await logForecast(d, (histonly ? '[history-only] ' : '') + q);
   } catch(e){
     if (e && e.code === 'cancelled') $('#status').textContent = 'Stopped.';
     else {
