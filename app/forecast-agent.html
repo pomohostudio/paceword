@@ -123,7 +123,7 @@ seven audited failure modes checked by name · no self-extremizing · intervals 
 <script>
 const $ = s => document.querySelector(s);
 const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let sample = null, db = null, aborter = null;
+let sample = null, db = null, aborter = null, ledgerItems = [];
 
 const PROTOCOL = `You are the Forecast Agent: a judgmental forecaster built from the audited
 cthmodules methodology. You have NO live web access in this context: reason from your
@@ -142,7 +142,13 @@ Follow this protocol IN ORDER:
 4. CALIBRATION GUARDS: never extremize yourself; no round-number snapping; a 90% interval is
    mandatory and must be at least as wide as the disagreement between reasonable reference
    classes; check small probabilities against the base-rate floor; front-loaded hazards decay.
-5. FAILURE-MODE CHECK (each committed and caught in the project that built you): circularity;
+5. COHERENCE WITH PRIOR LOGGED FORECASTS: if a PRIOR FORECASTS block is provided, check
+   your new probability against each for logical consistency — a superset event (same
+   construct, later deadline; or weaker condition, same deadline) must have probability
+   >= its subset's. If your answer conflicts with a prior, either conform or keep your
+   number and state, in a "coherence" field, which prior now looks wrong and what it
+   should roughly be. Never leave a violation unmentioned.
+6. FAILURE-MODE CHECK (each committed and caught in the project that built you): circularity;
    internal coherence mistaken for validity; ranking vs probability; censored outcome data;
    selection leaks; construct drift; fake independence (you are ONE correlated voice).
 
@@ -154,7 +160,8 @@ Then END your reply with exactly one fenced json block, nothing after it:
 "outside_view":{"reference_class":"...","base_rate":"...","horizon_note":"..."},
 "increments":[{"evidence":"...","direction":"up|down","logodds":0.0}],
 "cruxes":[{"crux":"...","would_move":"..."}],
-"honesty":"knowledge horizon, correlated-source note, construct risks"}
+"honesty":"knowledge horizon, correlated-source note, construct risks",
+"coherence":"only when prior forecasts were provided: consistency verdict, any conflict and suggested revision"}
 \`\`\``;
 
 function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
@@ -188,6 +195,7 @@ function renderResult(d, container, banner){
       </tbody></table></div></div>`:''}
     ${cruxes.length?`<div class="sect"><h2>Cruxes</h2>
       ${cruxes.map(c=>`<p>• <b>${esc(c.crux)}</b> — ${esc(c.would_move||'')}</p>`).join('')}</div>`:''}
+    ${d.coherence?`<div class="sect"><h2>Coherence</h2><p class="small">${esc(d.coherence)}</p></div>`:''}
     <div class="sect"><h2>Honesty</h2><p class="small">${esc(d.honesty||'')}</p></div>`;
   container.hidden = false;
 }
@@ -206,6 +214,7 @@ async function logForecast(d, question){
 function renderLedger(snap){
   const rows = $('#rows'); const docs = snap.docs.filter(x=>x.exists);
   const items = docs.map(x=>({id:x.id, ...x.data()})).sort((a,b)=>(b.created||0)-(a.created||0));
+  ledgerItems = items;
   const resolved = items.filter(i=>i.status==='yes'||i.status==='no');
   const briers = resolved.map(i=>{ const o = i.status==='yes'?1:0; return (i.p-o)*(i.p-o); });
   $('#score').textContent = resolved.length
@@ -215,7 +224,7 @@ function renderLedger(snap){
     <div class="ledrow" data-id="${esc(i.id)}">
       <span class="leddate">${new Date(i.created||0).toISOString().slice(0,10)}</span>
       <button class="ledq" data-act="view" title="Open the full reasoning">${esc(i.sharpened||i.question||'')}</button>
-      <span class="ledp">${pct(+i.p||0)}</span>
+      <span class="ledp" ${i.p_original!=null?`title="revised — originally ${pct(+i.p_original)}"`:''}>${pct(+i.p||0)}${i.p_original!=null?'<sup>r</sup>':''}</span>
       ${i.status==='pending'
         ? `<span class="rowbtns"><button data-act="yes">YES</button><button data-act="no">NO</button><button data-act="del" title="delete">×</button></span>`
         : `<span class="chip ${i.status}">${i.status.toUpperCase()} · Brier ${(((+i.p)-(i.status==='yes'?1:0))**2).toFixed(3)}</span>`}
@@ -235,7 +244,9 @@ document.addEventListener('click', async ev=>{
       const snap = await ref.get();
       const body = snap.exists ? snap.data() : null;
       if (body && body.detail) {
-        renderResult(body.detail, $('#result'),
+        const d2 = Object.assign({}, body.detail, {p: body.p, lo: body.lo, hi: body.hi});
+        if (body.revision) d2.coherence = 'REVISED ' + (body.revision.date||'') + ' (was ' + pct(+body.p_original||0) + '): ' + (body.revision.reason||'');
+        renderResult(d2, $('#result'),
           'Logged ' + new Date(body.created||0).toISOString().slice(0,10) + ' · ' + (body.status||'pending'));
         $('#result').scrollIntoView({behavior:'smooth'});
       } else $('#status').textContent = 'No stored detail for that entry.';
@@ -251,6 +262,9 @@ $('#run').addEventListener('click', async ()=>{
   if (!sample) { $('#status').textContent = 'Forecasting unavailable in this view.'; return; }
   const rdate = $('#rdate').value, ev = $('#ev').value.trim();
   let input = PROTOCOL + '\n\nQUESTION: ' + q;
+  const priors = ledgerItems.filter(i=>i.status==='pending').slice(0,12);
+  if (priors.length) input += '\n\nPRIOR FORECASTS (yours, logged in this ledger — enforce coherence):\n' +
+    priors.map(i=>`- [${new Date(i.created||0).toISOString().slice(0,10)}] p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
   if (rdate) input += '\nREQUESTED RESOLUTION DATE: ' + rdate;
   if (ev) input += '\nUSER-PROVIDED EVIDENCE (treat as claims to weigh, not established fact):\n' + ev;
   input += '\nTODAY: ' + new Date().toISOString().slice(0,10);

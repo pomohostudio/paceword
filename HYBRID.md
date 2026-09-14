@@ -163,6 +163,23 @@ standing process, not a one-shot session:
    liquid market on the question), combine and extremize per Satopää — the AIA report
    found model+market beats market alone, which is the realistic ceiling here.
 
+## Worked human-anchor example: Samotsvety's nuclear-risk method
+
+Their sites are egress-blocked from the audit environment, but the numbers and method are
+public ([March 2022](https://forum.effectivealtruism.org/posts/KRFXjCqqfGQAYirm5/samotsvety-nuclear-risk-forecasts-march-2022),
+[October 2022 update](https://samotsvety.org/blog/2022/10/03/samotsvety-nuclear-risk-update-october-2022/)):
+they estimated P(London hit by a nuclear weapon by mid-April 2022) at ~0.01% — 24
+micromorts, range 7–61 — by DECOMPOSING the event into a chain of conditional stages
+(nuclear use in Ukraine → escalation beyond → strike on a NATO capital), having each
+forecaster estimate each stage independently, aggregating per stage, then multiplying.
+In October they published an explicit ~2x upward revision with the reasoning.
+
+The transferable lessons, all now embedded in this project's protocol and app:
+decompose into scorable stages; aggregate independent estimates per stage, not just at
+the end; publish individual numbers and ranges, not only the aggregate; revise loudly
+with the ratio and the reason, never silently. The app's revision records (p_original +
+dated reason) are this last lesson mechanised.
+
 ## Version 3.1 — the panel (executed 2026-08-10)
 
 The missing ensemble layer, built three ways in one pass:
