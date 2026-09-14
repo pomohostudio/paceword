@@ -63,6 +63,12 @@ th{background:var(--bg);font-weight:600}
 .rowbtns button{padding:.15rem .55rem;font-size:.75rem}
 .small{font-size:.8rem;color:var(--muted)}
 .err{color:var(--accent)}
+select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:.4rem .5rem;max-width:100%;flex:1 1 15rem}
+.cmpgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+.cmpcol h3{margin:.2rem 0 .3rem;font-size:.95rem}
+.cmpcol .pnum{font-size:2rem}
+.cmpdelta{margin-top:1rem;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+@media (max-width:520px){.cmpgrid{grid-template-columns:1fr}}
 [hidden]{display:none!important}
 a{color:var(--accent)}
 </style>
@@ -119,6 +125,15 @@ a{color:var(--accent)}
   Click a question to reopen its full reasoning. YES/NO = how reality resolved
   per the entry's named criterion; that click computes the Brier score. Mark outcomes when reality arrives — the Brier score against your logged
   probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
+</section>
+
+<section class="card" id="compare" hidden>
+  <h2>Compare two forecasts</h2>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+    <select id="cmpA" aria-label="First forecast"></select>
+    <select id="cmpB" aria-label="Second forecast"></select>
+  </div>
+  <div id="cmpout"></div>
 </section>
 
 <section class="card" id="audit" hidden>
@@ -334,7 +349,53 @@ function renderLedger(snap){
         : `<span class="chip ${i.status}">${i.status.toUpperCase()} · Brier ${(((+i.p)-(i.status==='yes'?1:0))**2).toFixed(3)}</span>`}
     </div>`).join('') || '<p class="small">Nothing logged yet.</p>';
   $('#ledger').hidden = false;
+  populateCompare(items);
   renderAudit(items);
+}
+
+function optLabel(i){ const t=(i.sharpened||i.question||'').replace(/^\[history-only\]\s*/,''); 
+  const tag = /history-only/.test(i.sharpened||i.question||'') ? '[hist] ' : ''; 
+  return tag + (t.length>58 ? t.slice(0,58)+'…' : t) + '  ('+pct(+i.p||0)+')'; }
+
+function populateCompare(items){
+  if (items.length < 2){ $('#compare').hidden = true; return; }
+  $('#compare').hidden = false;
+  for (const sel of ['#cmpA','#cmpB']){
+    const el = $(sel), prev = el.value;
+    el.innerHTML = items.map(i=>`<option value="${esc(i.id)}">${esc(optLabel(i))}</option>`).join('');
+    if (items.some(i=>i.id===prev)) el.value = prev;
+  }
+  // sensible default: two most recent
+  if (!$('#cmpA').value) $('#cmpA').value = items[0].id;
+  if (!$('#cmpB').value || $('#cmpB').value===$('#cmpA').value) $('#cmpB').value = (items[1]||items[0]).id;
+  renderCompare();
+}
+
+function colHTML(i){
+  const d = i.detail||{}, incs = Array.isArray(d.increments)?d.increments:[];
+  const sp = +d.statistical_prior;
+  return `<div class="cmpcol">
+    <h3>${esc(i.sharpened||i.question||'')}</h3>
+    <div class="pnum">${pct(+i.p||0)}</div>
+    <div class="interval">90%: ${pct(+i.lo||0)} – ${pct(+i.hi||0)}</div>
+    ${sp===sp?`<p class="small">outside-view prior: ${pct(sp)}</p>`:''}
+    <p class="small" style="margin-top:.5rem"><b>Increments (${incs.length})</b></p>
+    ${incs.length?`<div class="wrap"><table><tbody>
+      ${incs.map(x=>`<tr><td>${esc(x.evidence)}</td><td style="white-space:nowrap">${x.direction==='up'?'↑':'↓'} ${(x.direction==='up'?'+':'−')}${Math.abs(+x.logodds||0).toFixed(2)}</td></tr>`).join('')}
+      </tbody></table></div>`:'<p class="small">none</p>'}</div>`;
+}
+
+function renderCompare(){
+  const a = ledgerItems.find(x=>x.id===$('#cmpA').value);
+  const b = ledgerItems.find(x=>x.id===$('#cmpB').value);
+  if (!a||!b){ $('#cmpout').innerHTML=''; return; }
+  const dp = (+a.p) - (+b.p);
+  const na = (a.detail?.increments||[]).length, nb = (b.detail?.increments||[]).length;
+  $('#cmpout').innerHTML = `
+    <div class="cmpdelta"><b>Δ probability: ${(dp>=0?'+':'')+(100*dp).toFixed(1)} pts</b>
+      — left ${pct(+a.p)} vs right ${pct(+b.p)}.
+      ${a===b?'Pick two different forecasts.':`Left applies ${na} increment${na===1?'':'s'}, right ${nb}. The extra increments on the fuller side are what the added information contributed.`}</div>
+    <div class="cmpgrid">${colHTML(a)}${colHTML(b)}</div>`;
 }
 
 function renderAudit(items){
@@ -491,6 +552,8 @@ $('#cancel').addEventListener('click', ()=>{ if (aborter) aborter.abort(); });
 (async ()=>{
   [sample, db, mcp] = await Promise.all([claude.use('sample'), claude.use('db'), claude.use('mcp')]);
   if (!sample) $('#status').textContent = 'Forecasting unavailable in this view (open on claude.ai).';
+  $('#cmpA').addEventListener('change', renderCompare);
+  $('#cmpB').addEventListener('change', renderCompare);
   if (db) {
     try {
       db.collection('forecasts').onSnapshot(renderLedger, ()=>{ /* degraded: leave ledger hidden */ });
