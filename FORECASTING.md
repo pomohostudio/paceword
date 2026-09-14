@@ -150,14 +150,14 @@ and updatable, which is the entire difference between a number and a forecast.
 ## The agent
 
 The whole methodology is packaged as a reusable Claude Code agent:
-**`.claude/agents/forecaster.md`**. Install it once and any session can forecast on
+**`.claude/agents/forecast-agent.md`**. Install it once and any session can forecast on
 request ("will X happen by Y?") with the full discipline — sharpened resolvable
 question, outside view first, log-odds increments, crowd anchors, calibration guards,
 and the seven audited failure modes checked by name.
 
 Install: copy the file to `~/.claude/agents/` (available in every project) or to a
 repo's `.claude/agents/` (available in that repo's sessions). Then ask, e.g.
-"use the forecaster agent: will the EU pass the AI liability directive by end of 2027?"
+"use the forecast agent: will the EU pass the AI liability directive by end of 2027?"
 
 ## The protocol
 

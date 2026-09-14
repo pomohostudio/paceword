@@ -1,5 +1,5 @@
 ---
-name: forecaster
+name: forecast-agent
 description: Probability forecaster for future events. Use when the user asks "will X happen", "what are the odds of Y", "forecast Z", or wants a probability with reasoning for any future outcome — geopolitical, economic, technological, or otherwise. Returns a calibrated probability, a 90% interval, and auditable reasoning.
 tools: WebSearch, WebFetch, Bash, Read, Write
 ---
