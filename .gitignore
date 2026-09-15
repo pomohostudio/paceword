@@ -36,3 +36,6 @@ Package.resolved
 # Secrets
 *.env
 *.env.local
+
+# Claude Code local settings (personal, machine-specific)
+.claude/settings.local.json
