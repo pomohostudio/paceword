@@ -101,6 +101,25 @@ th{color:var(--faint);font-family:"Space Mono",ui-monospace,monospace;font-weigh
  background:var(--code);font-size:.86rem}
 @media (max-width:520px){.cmpgrid{grid-template-columns:1fr}.cmpcol{border-left:none;padding-left:0}}
 
+/* chat */
+.chat{display:flex;flex-direction:column;gap:1.3rem}
+.msg{max-width:100%;display:flex;flex-direction:column}
+.msg .who{font-family:"Space Mono",ui-monospace,monospace;font-size:.58rem;letter-spacing:.22em;
+ text-transform:uppercase;color:var(--faint);margin:0 0 .4rem}
+.bubble{border:1px solid var(--line);border-radius:2px;padding:.85rem 1rem;letter-spacing:.005em}
+.bubble p{margin:.5rem 0}.bubble p:first-child{margin-top:0}.bubble p:last-child{margin-bottom:0}
+.bubble code{font-family:"Space Mono",ui-monospace,monospace;font-size:.86em;color:var(--codeink)}
+.msg.user{align-items:flex-end}
+.msg.user .bubble{background:transparent;border-color:var(--line2);max-width:88%;color:var(--accent)}
+.msg.bot .bubble{background:linear-gradient(180deg,var(--panel),var(--panel2))}
+.fcard{margin-top:1rem;border-top:1px solid var(--line2);padding-top:1rem}
+.fcard .eyebrow{margin-bottom:.6rem}
+.composer{border-top:1px solid var(--line);padding-top:1.2rem;margin-top:1.4rem;display:flex;flex-direction:column;gap:.7rem}
+.composer .row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.toggle{display:inline-flex;align-items:center;gap:.4rem;font-family:"Space Mono",ui-monospace,monospace;
+ font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);cursor:pointer}
+.toggle input{width:auto;accent-color:var(--accentdim)}
+
 .small{font-size:.8rem;color:var(--muted);letter-spacing:.005em}
 .err{color:var(--bad)}
 a{color:var(--accent);text-underline-offset:3px;text-decoration-color:var(--accentdim)}
@@ -119,34 +138,29 @@ hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
 <header>
   <p class="eyebrow">Cthmodules-audit — Forecasting Class 001</p>
   <h1>Forecast<br>Agent</h1>
-  <p class="lede">Probability with reasoning for any future event — outside view first,
-  increments in log-odds, cruxes named, every forecast logged and scored on resolution.
-  Live retrieval through Tavily, Exa and Firecrawl, with macro data from Alpha Vantage on
-  economic questions; absent those, it reasons from model knowledge plus your evidence, and says so.</p>
+  <p class="lede">Ask about any future event in plain words. It reframes your question into
+  something resolvable, tells you what it thinks and why, gives a probability with a 90% interval,
+  and then keeps talking — push back, ask what would change its mind, stress-test the deadline.
+  Outside view first, increments in log-odds, every number logged and scored on resolution.
+  Live retrieval through Tavily, Exa and Firecrawl, macro data from Alpha Vantage on economic
+  questions; absent those it reasons from model knowledge and says so.</p>
 </header>
 
 <section class="card">
-  <div class="fields">
-    <div>
-      <label for="q">The question</label>
-      <textarea id="q" rows="2" placeholder="Will [event] happen by [date]? e.g. Will the ECB cut rates below 1.5% before July 2027?"></textarea>
-    </div>
-    <div>
-      <label for="rdate">Resolution date (optional — the agent will pick one if empty)</label>
-      <input type="date" id="rdate">
-    </div>
-    <div>
-      <label for="ev">Evidence to consider (optional — paste recent news, data, context)</label>
-      <textarea id="ev" rows="3" placeholder="Anything after the model's knowledge cutoff that should inform this."></textarea>
-    </div>
-    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
-      <button class="primary" id="run">Run forecast</button>
-      <button id="runhist" title="Forecast from world history alone">History-only</button>
+  <h2>The Conversation</h2>
+  <div class="chat" id="chat"></div>
+  <div class="composer">
+    <textarea id="msg" rows="2" placeholder="Ask about any future event — e.g. “Will Putin still rule Russia in 2036?” or “Will the Russia–Ukraine war end within two years?”"></textarea>
+    <div class="row">
+      <button class="primary" id="send">Send</button>
       <button id="cancel" hidden>Stop</button>
+      <label class="toggle" title="Answer from historical base rates alone, blind to current events"><input type="checkbox" id="histmode"> History-only</label>
+      <button id="newthread" title="Clear this thread and start a fresh forecast">New thread</button>
       <span class="status" id="status"></span>
     </div>
-    <p class="small" style="margin:.1rem 0 0"><b>Run forecast</b> uses everything — live news, macro data, your evidence.
-    <b>History-only</b> answers from base rates and historical analogues alone (blind to current events) — the pure outside-view, to compare against a full run.</p>
+    <p class="small" style="margin:.1rem 0 0">Enter to send · Shift+Enter for a new line.
+    Toggle <b>History-only</b> before sending to get the pure outside-view — base rates and structural
+    analogues, blind to the news — to compare against a full answer.</p>
   </div>
 </section>
 
@@ -161,10 +175,11 @@ hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
   <h2>The Ledger</h2>
   <p class="small" id="score"></p>
   <div id="rows"></div>
-  <p class="small">Tip: anything typed in the Evidence box is also given to ↻ update.
-  Click a question to reopen its full reasoning. YES/NO = how reality resolved
-  per the entry's named criterion; that click computes the Brier score. Mark outcomes when reality arrives — the Brier score against your logged
-  probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
+  <p class="small">Every forecast from a conversation lands here; keep asking about the same
+  question in one thread and it becomes a trajectory. Click a question to reopen its full reasoning.
+  ↻ re-forecasts it as of today. YES/NO = how reality resolved per the entry's named criterion;
+  that click computes the Brier score. Mark outcomes when reality arrives — the Brier score against
+  your logged probability is the only evidence this agent works. Baseline to beat: 0.25 (always saying 50%).</p>
 </section>
 
 <section class="card" id="compare" hidden>
@@ -299,6 +314,46 @@ type, cycle position), never event-based. statistical_prior and final p should n
 coincide. Leave market_anchors empty. In "honesty", state that this is the pure
 outside-view species, produced blind to the present for comparison against a full run.`;
 
+const CHAT_SYSTEM = `You are the Forecast Agent, in CONVERSATION with a user. Talk like a sharp,
+honest forecaster thinking out loud — plain, direct, first person, a few short paragraphs, never
+an essay. Keep the full audited discipline underneath every answer, but deliver it as conversation,
+not a report.
+
+WHEN THE USER ASKS ABOUT A FUTURE EVENT (a fresh question, or asks you to re-forecast one):
+1. REFRAME their words, in a sentence or two, into a resolvable question: the precise claim, a
+   resolution date (pick a sensible one and say so if they didn't give one), a NAMED third-party
+   resolution source, and what would NOT count.
+2. Give your VIEW: lead with the outside-view base rate and the reference class it comes from, then
+   the handful of considerations that move you off it, up or down, in prose. State your probability
+   and a 90% interval explicitly, in words. Close with a one-line CONCLUSION — what the number rests
+   on and the single biggest crux.
+3. Invite a follow-up ("want me to stress-test the deadline?", "ask what would change this").
+4. Obey the discipline: outside view BEFORE specifics; adjust with explicit log-odds increments
+   (each <=0.3, total <=0.5 unless the evidence is extraordinary and you say so); count stability
+   evidence, not only drama; never extremize yourself; no round-number snapping; the interval must
+   be at least as wide as the disagreement between reasonable reference classes; you are ONE
+   correlated voice, not a crowd; watch the seven failure modes (circularity, coherence mistaken
+   for validity, ranking vs probability, censored data, selection leaks, construct drift, fake
+   independence). If PRIOR FORECASTS are provided, stay coherent with them and flag any conflict.
+   THEN — and only on a turn where you actually give or revise a number — append at the very end
+   exactly one fenced json block, nothing after it, matching this schema:
+\`\`\`json
+{"sharpened":"...","resolution":{"date":"YYYY-MM-DD","source":"...","construct":"...","not_counting":["..."]},
+"p":0.00,"lo":0.00,"hi":0.00,"statistical_prior":0.00,
+"market_anchors":[{"name":"only if the evidence contains market/crowd odds","p":0.00}],
+"outside_view":{"reference_class":"...","base_rate":"...","horizon_note":"..."},
+"increments":[{"evidence":"...","direction":"up|down","logodds":0.0}],
+"cruxes":[{"crux":"...","would_move":"..."}],
+"honesty":"knowledge horizon, correlated-source note, construct risks",
+"coherence":"only when prior forecasts were provided"}
+\`\`\`
+The user never reads the json — it renders as a structured card beneath your message — so put the
+human-readable version of the number, the interval and the reasoning in your prose ABOVE it.
+
+WHEN THE USER IS JUST TALKING (asking why, pushing back, clarifying, chasing a tangent, "what
+would change your mind"): answer conversationally in prose and DO NOT append a json block. Emit
+json ONLY when you are actually stating or revising a probability.`;
+
 function pct(x){ return (100*x).toFixed(1).replace(/\.0$/,'') + '%'; }
 
 function renderResult(d, container, banner){
@@ -358,15 +413,29 @@ function renderResult(d, container, banner){
 }
 
 async function logForecast(d, question){
-  if (!db) return;
+  if (!db) return null;
   try {
-    await db.collection('forecasts').add({
+    const ref = await db.collection('forecasts').add({
       question, sharpened: d.sharpened||'', p:+d.p, lo:+d.lo, hi:+d.hi,
       history: [{date: Date.now(), p:+d.p, lo:+d.lo, hi:+d.hi, src:'initial'}],
       resolution_date: d.resolution?.date||'', resolution_source: d.resolution?.source||'',
       status: 'pending', created: Date.now(), detail: JSON.parse(JSON.stringify(d))
     });
-  } catch(e){ /* quota or transient: ledger listener stays authoritative */ }
+    return ref && ref.id;
+  } catch(e){ /* quota or transient: ledger listener stays authoritative */ return null; }
+}
+
+async function updateForecast(id, d){
+  if (!db || !id) return null;
+  try {
+    const ref = db.collection('forecasts').doc(id);
+    const snap = await ref.get(); const body = snap.exists ? snap.data() : null;
+    if (!body) return null;
+    const hist = Array.isArray(body.history) ? body.history.slice() : [];
+    hist.push({date: Date.now(), p:+d.p, lo:+d.lo, hi:+d.hi, src:'chat'});
+    await ref.update({p:+d.p, lo:+d.lo, hi:+d.hi, history: hist, detail: JSON.parse(JSON.stringify(d))});
+    return hist;
+  } catch(e){ return null; }
 }
 
 function renderLedger(snap){
@@ -494,7 +563,7 @@ document.addEventListener('click', async ev=>{
       const others = ledgerItems.filter(i=>i.status==='pending' && i.id!==id).slice(0,10);
       if (others.length) input += '\n\nPRIOR FORECASTS on other questions (enforce coherence):\n' +
         others.map(i=>`- p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
-      const evx = $('#ev').value.trim();
+      const evEl = $('#ev'); const evx = evEl ? evEl.value.trim() : '';
       if (evx) input += '\n\nNEW EVIDENCE provided now by the user (weigh with the credibility bar; treat as claims, not established fact):\n' + evx;
       b.disabled = true; $('#result').hidden = true; $('#streamcard').hidden = false;
       $('#stream').textContent = ''; $('#status').textContent = mcp ? 'Searching the web…' : 'Re-forecasting…';
@@ -541,57 +610,116 @@ document.addEventListener('click', async ev=>{
   } catch(e){ $('#status').textContent = 'Ledger write failed: '+ (e.code||'error'); }
 });
 
-async function runForecast(histonly){
-  const q = $('#q').value.trim();
-  if (!q) { $('#status').textContent = 'Type a question first.'; return; }
-  if (!sample) { $('#status').textContent = 'Forecasting unavailable in this view.'; return; }
-  const rdate = $('#rdate').value;
-  const ev = histonly ? '' : $('#ev').value.trim();
-  let input = PROTOCOL + (histonly ? HISTORY_MODE : '') + '\n\nQUESTION: ' + q;
-  const priors = ledgerItems.filter(i=>i.status==='pending').slice(0,12);
-  if (priors.length) input += '\n\nPRIOR FORECASTS (yours, logged in this ledger — enforce coherence):\n' +
-    priors.map(i=>`- [${new Date(i.created||0).toISOString().slice(0,10)}] p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
-  if (rdate) input += '\nREQUESTED RESOLUTION DATE: ' + rdate;
-  if (ev) input += '\nUSER-PROVIDED EVIDENCE (treat as claims to weigh, not established fact):\n' + ev;
-  input += '\nTODAY: ' + new Date().toISOString().slice(0,10);
+// ---- chat ----
+let convo = [];          // real transcript, {role:'user'|'assistant', content}
+let currentId = null;    // ledger doc id for this thread's main question
+let firstAsked = false;
+const RETRIG = /\b(will|would|by 20|probab|odds|chance|likely|happen|forecast|predict|re-?forecast|within|next|year|month|deadline|elect|war|rate|price|collapse|survive|resign|invade|default)\b/i;
 
-  $('#run').disabled = true; $('#runhist').disabled = true; $('#cancel').hidden = false;
-  $('#result').hidden = true; $('#streamcard').hidden = false;
-  $('#stream').textContent = ''; $('#status').textContent = mcp ? 'Searching the web…' : 'Thinking…';
-  const ret = histonly ? null : await retrieve(q);
-  if (ret) input += '\n\nLIVE RETRIEVAL (fetched moments ago via ' + ret.used.join(' + ') +
-    '; this OVERRIDES the no-web-access note above — these results are current as of today. ' +
-    'Still apply the credibility bar and cite sources by name in increments):\n' + ret.text;
+function fmt(t){
+  return '<p>' + esc(t)
+    .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n{2,}/g,'</p><p>')
+    .replace(/\n/g,'<br>') + '</p>';
+}
+// hide the trailing json block (and any partial one mid-stream) from the reader
+function stripJson(t){ return t.replace(/```json[\s\S]*$/i,'').replace(/```[\s\S]*$/,'').trim(); }
+
+function addBubble(role){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  wrap.innerHTML = `<p class="who">${role==='user'?'You':'Forecast Agent'}</p><div class="bubble"></div>`;
+  $('#chat').appendChild(wrap);
+  wrap.scrollIntoView({behavior:'smooth', block:'end'});
+  return wrap.querySelector('.bubble');
+}
+
+function seedIntro(){
+  $('#chat').innerHTML = '';
+  const b = addBubble('bot');
+  b.innerHTML = fmt("Ask me about any future event and I'll tell you what I think and how likely it is — with a probability and a 90% interval, the reference class it rests on, and the one thing that would move me. Then keep talking: push back, ask what would change my mind, or tighten the deadline.\n\nTry: **Will Putin still rule Russia in 2036?** — or flip on **History-only** for the pure base-rate view, blind to the news.");
+}
+
+async function send(){
+  const msg = $('#msg').value.trim();
+  if (!msg) return;
+  if (!sample) { $('#status').textContent = 'Chat unavailable in this view (open on claude.ai).'; return; }
+  const hist = $('#histmode').checked;
+  $('#msg').value = '';
+  convo.push({role:'user', content: msg});
+  addBubble('user').innerHTML = fmt(msg);
+  const bb = addBubble('bot');
+  bb.innerHTML = '<span class="small">…</span>';
+  $('#send').disabled = true; $('#newthread').disabled = true; $('#cancel').hidden = false;
+  $('#status').textContent = (mcp && !hist) ? 'Searching the web…' : 'Thinking…';
+
+  // retrieval on the opening question, or on later turns that look like a fresh/revised forecast
+  let ret = null;
+  if (!hist && mcp && (!firstAsked || RETRIG.test(msg))) { try { ret = await retrieve(msg); } catch(e){} }
+  firstAsked = true;
+
+  // steer every turn: system preamble as a priming pair, then the real transcript
+  let sys = CHAT_SYSTEM + (hist ? '\n\n' + HISTORY_MODE : '');
+  sys += '\n\nTODAY: ' + new Date().toISOString().slice(0,10);
+  const priors = ledgerItems.filter(i=>i.status==='pending' && i.id!==currentId).slice(0,10);
+  if (priors.length) sys += '\n\nPRIOR FORECASTS (yours, logged in the ledger — enforce coherence):\n' +
+    priors.map(i=>`- p=${(+i.p).toFixed(2)} — ${i.sharpened||i.question}`).join('\n');
+
+  const turns = [
+    {role:'user', content: sys},
+    {role:'assistant', content: "Understood — I'll forecast conversationally and keep the discipline underneath."},
+    ...convo.map(t=>({role:t.role, content:t.content}))
+  ];
+  if (ret) turns[turns.length-1].content += '\n\n[LIVE RETRIEVAL fetched moments ago via ' +
+    ret.used.join(' + ') + ' — current as of today; you have web access after all. Apply the credibility ' +
+    'bar and cite sources by name]:\n' + ret.text;
+
   $('#status').textContent = 'Thinking…';
   aborter = new AbortController();
   try {
-    const {text} = await sample(input, {
+    const {text} = await sample(turns, {
       signal: aborter.signal,
-      onText: ({text})=>{ const el=$('#stream'); el.textContent = text; el.scrollTop = el.scrollHeight; }
+      onText: ({text})=>{ bb.innerHTML = fmt(stripJson(text)) || '<span class="small">…</span>';
+        bb.closest('.msg').scrollIntoView({behavior:'smooth', block:'end'}); }
     });
-    const m = text.match(/```json\s*([\s\S]*?)```\s*$/);
-    if (!m) throw {code:'invalid_json', message:'no JSON block', text};
-    const d = JSON.parse(m[1]);
-    renderResult(d, $('#result'));
-    $('#streamcard').hidden = true; $('#status').textContent = '';
-    await logForecast(d, (histonly ? '[history-only] ' : '') + q);
-  } catch(e){
-    if (e && e.code === 'cancelled') $('#status').textContent = 'Stopped.';
-    else {
-      $('#status').innerHTML = '<span class="err">'+esc(e && e.code ? e.code+': '+(e.message||'') : 'Failed')+'</span>';
-      if (e && e.text) { $('#stream').textContent = e.text; $('#streamcard').hidden = false; }
+    const prose = stripJson(text);
+    bb.innerHTML = fmt(prose) || '<span class="small">(no reply)</span>';
+    convo.push({role:'assistant', content: text});   // keep full text so the model sees its own last number
+    const m = text.match(/```json\s*([\s\S]*?)```/i);
+    if (m) {
+      let d = null; try { d = JSON.parse(m[1]); } catch(e){}
+      if (d && d.p != null) {
+        const card = document.createElement('div'); card.className = 'fcard'; bb.appendChild(card);
+        if (currentId) {
+          const traj = await updateForecast(currentId, d);
+          renderResult(Object.assign({}, d, (traj && traj.length>1) ? {_history: traj} : {}), card);
+        } else {
+          currentId = await logForecast(d, msg);
+          renderResult(d, card);
+        }
+        card.querySelector('[data-close-view]')?.remove();
+      }
     }
+    $('#status').textContent = '';
+  } catch(e){
+    convo.pop();  // drop the unanswered user turn so the transcript stays valid
+    if (e && e.code === 'cancelled') { bb.innerHTML = '<span class="small">Stopped.</span>'; $('#status').textContent = 'Stopped.'; }
+    else { bb.innerHTML = '<span class="err small">' + esc(e && e.code ? e.code : 'Failed') + '</span>'; $('#status').textContent = ''; }
   } finally {
-    $('#run').disabled = false; $('#runhist').disabled = false; $('#cancel').hidden = true; aborter = null;
+    $('#send').disabled = false; $('#newthread').disabled = false; $('#cancel').hidden = true; aborter = null; $('#msg').focus();
   }
 }
-$('#run').addEventListener('click', ()=>runForecast(false));
-$('#runhist').addEventListener('click', ()=>runForecast(true));
+
+$('#send').addEventListener('click', send);
+$('#msg').addEventListener('keydown', e=>{ if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+$('#newthread').addEventListener('click', ()=>{ if (aborter) return; convo=[]; currentId=null; firstAsked=false; $('#status').textContent=''; seedIntro(); $('#msg').focus(); });
 $('#cancel').addEventListener('click', ()=>{ if (aborter) aborter.abort(); });
 
+seedIntro();
 (async ()=>{
   [sample, db, mcp] = await Promise.all([claude.use('sample'), claude.use('db'), claude.use('mcp')]);
-  if (!sample) $('#status').textContent = 'Forecasting unavailable in this view (open on claude.ai).';
+  if (!sample) { $('#status').textContent = 'Chat unavailable in this view (open on claude.ai).'; $('#send').disabled = true; }
   $('#cmpA').addEventListener('change', renderCompare);
   $('#cmpB').addEventListener('change', renderCompare);
   if (db) {
