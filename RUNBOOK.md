@@ -160,3 +160,102 @@ LLM–superforecaster parity ~Nov 2026 [CI Dec 2025–Jan 2028] — the parity w
 New paper relevant to our panel design: "The Wisdom of Deliberating AI Crowds" (arXiv
 2512.22625) — whether deliberation improves LLM forecasts; our panel is deliberately
 non-deliberating (blind), revisit at the Nov re-poll. Field tables unchanged.
+
+**2026-10-14 — update 2** (+30 days). *Branch note:* this cycle ran on `forecast-agent`;
+the routine's stored prompt still names `cthmodules-audit`, which was renamed and the old
+ref deleted on 2026-09-16.
+
+*Crux (a), IRGC cohesion — stays resolved "held"; no re-opening.* No defection or
+unit-level fracture reporting surfaced this cycle. The UK Commons briefing records security
+forces as having remained loyal through the January crackdown. The only force-on-force
+events are periphery insurgency, not fracture: three law-enforcement officers killed at
+Shadegan (Aug), and IRGC clashes with armed men in Taftan county, Sistan-Baluchestan, on
+13 Oct (no independently confirmed casualties). Baluch and Arab-minority militancy there is
+longstanding and does not bear on cohesion of the central security apparatus.
+
+*Crux (b), creeping coup — still NO, now with affirmative counter-evidence.* Mojtaba
+Khamenei is exercising real decision authority: Iran's seven-day Hormuz proposal was
+approved by him and the Supreme National Security Council before transmission through
+Qatari mediators. A figurehead structure does not produce that.
+
+*War:* bilateral kinetic pause since ~7–9 Sept, still holding at the Day-225 OPREP
+(10 Oct) — no US/coalition strike on Iranian territory ashore, no Iranian attack on a host
+state. On 8 Oct Trump announced no US strikes before the 3 Nov midterms. Diplomacy is
+nonetheless deadlocked: Iran called the US response to its seven conditions "insufficient"
+(Rezaei, 11 Oct); Hormuz stays closed; the nuclear-first vs Hormuz-first sequencing dispute
+that killed the June MOU is untouched. Proxy track live (Houthi missile strike on Riyadh's
+King Khalid airport ~10 Oct, deadliest in a Gulf state since the war began). No ground
+invasion — the only foreign-imposed replacement mechanism — and none in prospect while the
+pause holds.
+
+*Economy — the cycle's one genuinely new development.* Free-market rial ~2.6–2.7m/USD
+(Iran International 2.7m on 6 Oct; alanchand 2,605,000 on 13 Oct) against ~1.44–1.47m at
+the late-December protest trigger: a further ~80% depreciation in nine months. CBI governor
+Hemmati puts September y/y inflation at 83.8% (84.4% in Aug); independent readings say
+~90%. The central bank is deploying up to $2bn in cash dollars to defend the currency and
+Tehran is openly divided over doing so; the deputy governor calls the slide "temporary" and
+blames "misleading expectations."
+
+Increments (log-odds on 0.14):
+- rial 1.44m → ~2.65m, inflation 52% → ~84–90%, reserves burned on a contested $2bn
+  defence, oil revenue strangled by blockade — a compounding stressor over a 34-month
+  horizon: **+0.20**
+- but no new mass protest wave has materialised at these *worse* numbers, and January 2026
+  already ran the natural experiment: a smaller shock produced a wave that was suppressed
+  with security forces loyal. The dose-response from economic pain to regime change is weak
+  here, and that is now evidenced rather than assumed: **−0.10**
+- ~30 further uneventful days of a front-loaded hazard window, kinetic pause removing the
+  invasion channel near-term: **−0.08**
+- Mojtaba exercising decision authority through the SNSC (consolidation; also tells against
+  the "authority over war policy is contested" reading): **−0.05**
+- periphery insurgency logged, no increment: **0.00**
+
+Net **−0.03**.
+
+**Ensemble: 0.14 → 0.13  [0.07, 0.28].** Within the ±0.10 soft norm. The upper bound is
+held at 0.28 rather than narrowed: the economic trajectory fattens the upper tail even as
+the central estimate drifts down on elapsed time and demonstrated absorptive capacity.
+
+*Data watch — NEGATIVE.* No qualifying new expert coding. V-Dem's 2026 wave ~Mar 2027;
+Freedom House and EIU ~Feb 2027; ERT tracks V-Dem; no Polity/GWF-successor or UCDP release
+in October. Logged as a finding in its own right: the **Critical Threats collapse-indicators
+tracker this runbook sends me to has not been updated since 3 Feb 2026.** It bills itself as
+a live, regularly updated product, so a cited instrument of this cycle is stale and must be
+treated as non-informative rather than as "indicators unchanged." ForecastBench snapshots
+not re-pulled this cycle (last: 2026-09-13).
+
+*Crowd anchors (Polymarket, mid-Oct).* Iran leader at end-2026: Mojtaba Khamenei **88%**.
+Leadership-change-by hazard: 4% (30 Sep), 6% (31 Oct), 9% (30 Nov). The regime-fall market's
+own text: as of September 2026 "hard-line military and clerical networks remain in control,
+with no scheduled events or verified internal fractures pointing to imminent change."
+Construct caveat carried forward from update 1a: Mojtaba's *personal* ouster by internal
+succession would NOT resolve criterion A, so these markets bound something broader than our
+question and are logged as an anchor rather than averaged in. One Polymarket page returned
+mutually inconsistent figures for "No Head of State" (5% vs 59%) — not used.
+
+*Research watch — the field moved.* Spring 2026 FutureEval: Metaculus's 10 Pros still edged
+the top-10 bots, but by only **+1.25 head-to-head points over 99 shared questions, not
+statistically significant** — against p=0.00001 (Q2 2025) and p=0.001 (Q1 2025). Nine of ten
+individual Pros still beat every individual bot. And on **5 Sept 2026 a bot won the Summer
+2026 Metaculus Cup outright** (bots 1st/2nd/5th), though the Cup rewards coverage, earliness
+and update frequency and is not a controlled comparison. Metaculus's objection is preserved:
+most external parity claims rest on backtests against resolved questions, not live forward
+evaluation. Consistent with FRI's extrapolated parity window (~Nov 2026, CI Dec 2025 –
+Jan 2028) logged last cycle. HYBRID.md research tables updated accordingly.
+
+*Human anchors — NEGATIVE.* No new published Samotsvety, Swift Centre or Good Judgment/FRI
+probability on Iran regime stability found this cycle.
+
+Panel re-poll: not due (quarterly; next ~2026-11). Market price: no criterion-A market
+exists; crowd anchors logged above in lieu.
+
+Sources: [GlobalSecurity Day-225 OPREP](https://www.globalsecurity.org/military/ops/iran-war-oprep.htm) ·
+[Iran International on the $2bn rial defence](https://www.iranintl.com/en/202610076990) ·
+[Iran International, dollar at 1.47m (Jan baseline)](https://www.iranintl.com/en/202601061682) ·
+[UK Commons Library, Iran protests 2026](https://commonslibrary.parliament.uk/research-briefings/cbp-10462/) ·
+[Critical Threats collapse indicators (stale, 3 Feb 2026)](https://www.criticalthreats.org/analysis/indicators-of-iranian-regime-collapse) ·
+[Stimson, indicators of regime collapse](https://www.stimson.org/2026/what-would-be-indicators-of-regime-collapse-in-iran/) ·
+[Elcano on protest resilience and containment](https://www.realinstitutoelcano.org/en/analyses/irans-2025-26-protests-resilience-and-political-containment/) ·
+[Spring 2026 AIB / FutureEval](https://www.metaculus.com/futureeval/) ·
+[Q2 AIB results](https://forum.effectivealtruism.org/posts/F2stjK9wHSy3HPEC9/q2-ai-benchmark-results-pros-maintain-clear-lead) ·
+[Summer 2026 Metaculus Cup](https://hraness.com/reading/artificial-intelligence-now-beats-some-of-the-best-human-forecasters)

@@ -16,14 +16,14 @@ judgement increment written down.
 |---|---|---|
 | [Samotsvety](https://samotsvety.org/track-record/) | Won CSET-Foretell/INFER by ~2x the next team, multiple years; members' GJOpen Brier ratios 0.67–0.71 vs median | Small team of independent forecasters; each forecasts alone, then aggregate; Fermi decomposition; explicit base rates; frequent updates |
 | Superforecasters (GJP lineage) | [ForecastBench](https://arxiv.org/abs/2409.19839): Brier 0.093 vs public 0.107; on extended data 0.068 vs 0.083 | Outside view first; granular probabilities; small frequent updates; teaming; log-odds extremizing of aggregates |
-| Metaculus Pros | [Q2 2026 AIB results](https://www.lesswrong.com/posts/Surnjh8A4WjgtQTkZ/q2-ai-benchmark-results-pros-maintain-clear-lead): beat all bots every quarter for 1.5 years | Recalibrated community aggregation |
+| Metaculus Pros | [Q2 2026 AIB](https://www.lesswrong.com/posts/Surnjh8A4WjgtQTkZ/q2-ai-benchmark-results-pros-maintain-clear-lead): beat all bots every quarter for 1.5 years. **Spring 2026 FutureEval (logged 2026-10-14): lead narrowed to +1.25 head-to-head pts over 99 shared questions — NOT statistically significant**, vs p=0.00001 (Q2 2025) and p=0.001 (Q1 2025); 9 of 10 individual Pros still beat every individual bot | Recalibrated community aggregation |
 
 **Machines:**
 
 | System | Result | Architecture |
 |---|---|---|
 | [AIA Forecaster](https://arxiv.org/abs/2511.07678) (Nov 2025) | **0.1125 vs superforecaster median 0.1110 on ForecastBench — parity, first ever** | (1) agentic search over high-quality news; (2) supervisor agent reconciling disparate forecasts; (3) statistical calibration against LLM biases. Underperforms liquid prediction markets, but ensemble with market consensus beats consensus alone |
-| Metaculus AIB best bot (metac-claude + asknews) | top ~3% of 1130 humans, Spring 2026 Cup | LLM + news retrieval |
+| Metaculus AIB best bot (metac-claude + asknews) | top ~3% of 1130 humans, Spring 2026 Cup. **A bot won the Summer 2026 Metaculus Cup outright, 2026-09-05** (bots 1st/2nd/5th, humans 3rd/4th) — but the Cup rewards coverage, earliness and update frequency, so it is not a controlled comparison, and sources disagree on exact standings | LLM + news retrieval |
 | Halawi et al. 2024 | approached crowd aggregate | retrieval-augmented LLM, fine-tuned |
 | [ViEWS/Conflictology](https://journals.sagepub.com/doi/10.1177/00223433241300862) (Hegre et al.) | leads the 2023/24 fatalities challenge | ensembles forecasting full probability *distributions* of conflict deaths, country-month |
 
@@ -31,8 +31,13 @@ judgement increment written down.
 1. The aggregate of several *independent* forecasts beats any single one; extremizing the
    aggregate in log-odds (the GJP result) adds skill — but only for genuinely independent inputs.
 2. Retrieval is where machine skill comes from; the model supplies the prior.
-3. Pros still lead bots head-to-head (every Metaculus quarter to date), but the gap closed
-   from "not close" (2024) to "parity on one benchmark" (AIA, late 2025).
+3. Pros still lead bots head-to-head, but the margin has gone from "not close" (2024) to
+   "parity on one benchmark" (AIA, late 2025) to **statistically insignificant on
+   Metaculus's own live benchmark (Spring 2026 FutureEval)**, with a bot taking the
+   Summer 2026 Cup outright. Metaculus's standing objection still holds and is worth
+   preserving: most external parity claims rest on backtests against already-resolved
+   questions, not live forward evaluation. FRI's extrapolated parity date (~Nov 2026,
+   CI Dec 2025 – Jan 2028) falls inside this window.
 4. Nobody reports a bare number: distributions, intervals, and named resolution criteria.
 
 ## What that means for this tool
