@@ -259,3 +259,121 @@ Sources: [GlobalSecurity Day-225 OPREP](https://www.globalsecurity.org/military/
 [Spring 2026 AIB / FutureEval](https://www.metaculus.com/futureeval/) ·
 [Q2 AIB results](https://forum.effectivealtruism.org/posts/F2stjK9wHSy3HPEC9/q2-ai-benchmark-results-pros-maintain-clear-lead) ·
 [Summer 2026 Metaculus Cup](https://hraness.com/reading/artificial-intelligence-now-beats-some-of-the-best-human-forecasters)
+
+**2026-11-14 — update 3** (+31 days). *Branch note:* ran on `forecast-agent`; the routine's
+stored prompt still names `cthmodules-audit`, renamed and deleted 2026-09-16.
+
+*Crux (a), IRGC cohesion — stays resolved "held"; no re-opening.* No defection or
+unit-level fracture reporting surfaced. Expert read unchanged from update 1 (Alfoneh: no
+signs of defections in the security apparatus; one analyst allows "there were defections,
+but they were not too dramatic"). Violence remains periphery insurgency — Shadegan (Aug),
+Taftan in Sistan-Baluchestan (13 Oct). No new mass protest wave reported Sept–Nov.
+
+*Crux (b), creeping coup — PARTIALLY RE-OPENED, as a coding question rather than an event.*
+No new development, so no increment, but the analytic record deserves logging: Mojtaba was
+reportedly elected by the Assembly of Experts under IRGC pressure (Iran International
+sourced), decision-making is described as having "coalesced around security institutions"
+with Mojtaba a coordinating figure rather than sole authority (Vatanka, MEI), and he "owes
+his leadership and survival to the security forces" more than his father did. These
+readings are dated Mar–May 2026 and are therefore not new evidence; what is new is
+recognising that they bear on CODING. Update 2 scored −0.05 for Mojtaba exercising SNSC
+authority as telling against a contested-authority reading. That was too quick: a garrison
+state that keeps a clerical figurehead is exactly the case the resolution's "contested"
+(0.5) band exists for. Flagged as a standing construct risk; resolve it by reading V-Dem's
+own `v2x_regime` coding rules, not by argument.
+
+*War:* US strikes resumed after an eight-week pause — 2–3 Nov (anti-aircraft facility,
+Qeshm Island, Trump-confirmed) and 6 Nov (air defence near the strait), both officially
+limited. October was the war's heaviest month (~28 attacks) but overwhelmingly IRGC strikes
+on COMMERCIAL tankers, not on regime or state targets, so the pressure runs through the
+economy rather than the survival apparatus. Hormuz ~4 transits/day against ~74 pre-war;
+Brent ~$117. Iran's two-day reopening offer stands on seven conditions; it called the US
+reply "unconvincing" (4 Nov). Qatar and Pakistan mediating; no ceasefire in force. No
+ground invasion — still the only foreign-imposed replacement mechanism — and none in
+prospect.
+
+*Economy:* no new November print located; October figures stand (rial ~2.6–2.7m/USD against
+~1.45m in late Dec 2025; Sept y/y inflation 83.8% official, ~90% independent; up to $2bn of
+reserves committed to defending the currency amid open division in Tehran).
+
+Increments (log-odds on 0.13):
+- US strikes resumed; external pressure continues but stays limited and air-only: **+0.05**
+- October attack peak = deeper economic strangulation over a 33-month horizon: **+0.05**
+- diplomacy deteriorated ("unconvincing"), so the war and the siege persist: **+0.05**
+- ~31 further days with no cohesion failure, no new protest wave and no succession
+  instability, in a front-loaded hazard window: **−0.12**
+- crux (b) coding risk logged, no increment: **0.00**
+
+Net **+0.03** — essentially flat.
+
+*PANEL RE-POLL (due; first since the 2026-08-10 baseline of 0.18).* Three forecasters run
+blind on an identical factual brief, different models, none shown prior answers or each
+other's:
+
+| panelist | p | 90% interval |
+|---|---|---|
+| A | 0.14 | [0.05, 0.32] |
+| B | 0.09 | [0.03, 0.22] |
+| C | 0.07 | [0.03, 0.15] |
+
+Median **0.09**, mean 0.10; the panel has moved 0.18 → 0.09 since August. Convergent themes
+— and this is ONE species, so agreement here is correlation, not confirmation: all three
+scored the survived succession as a large downward increment (−0.4 to −0.5), all three
+scored the absence of a replacement vehicle downward (−0.3 to −0.4), all three scored the
+currency and inflation collapse upward (~+0.3).
+
+**The disagreement is the finding, and it is not to be averaged away.** The panel split on
+the DIRECTION of the coding risk. B scored a garrison state coded "contested" as **+0.2
+up**. A scored measurement inertia as **−0.3 down** (V-Dem and Polity code conservatively
+and with lag, truncating the effective window well before 2029-08-09), and C similarly
+**−0.2 down**. Same construct feature, opposite signs, from the same brief. This is a
+construct-validity question the panel cannot settle; it is settled by reading the codebook.
+A also uniquely named a second successful decapitation as the main upward path (+0.6),
+noting Mojtaba's thinner independent clerical standing.
+
+*ENSEMBLE across species* (per HYBRID.md: independence lives between species, not within):
+statistical tool **0.17 [0.09, 0.32]** (FORECASTING.md, GWF party-based band, n=25
+comparable); LLM panel median **0.09**; crowd/market construct-mismatched and logged as an
+anchor only, not averaged; human anchors **none published**. Equal weight on the two usable
+species gives 0.13.
+
+**Ensemble: 0.13 → 0.13  [0.05, 0.30].** Central value unchanged, now resting on a fresh
+panel rather than a three-month-old one. The interval is WIDENED at the low end (0.07 →
+0.05): panel lows came in at 0.03/0.03/0.05 against the statistical voice's 0.09, and a 90%
+interval should be at least as wide as the disagreement between reasonable reference
+classes.
+
+*Data watch — NEGATIVE.* V-Dem's 2026 wave ~Mar 2027; Freedom House and EIU ~Feb 2027; ERT
+tracks V-Dem; no Polity/GWF-successor or UCDP release. **Second cycle running, the Critical
+Threats collapse-indicators tracker this runbook cites has not been updated since
+2026-02-03** — treat as non-informative, never as "indicators unchanged." ForecastBench
+snapshots not re-pulled this cycle (last: 2026-09-13).
+
+*Crowd anchors (Polymarket).* Iran leader at end-2026: Mojtaba Khamenei **88%**;
+leadership-change hazard 4% (30 Sep), 6% (31 Oct), 9% (30 Nov). Construct caveat stands:
+his personal ouster by internal succession would NOT resolve criterion A.
+
+*Research watch — the field moved again.* **FRI now states outright that "AI models now
+match superforecasters on ForecastBench", explicitly not by a statistically significant
+margin**, and is running an October 2026 rematch with superforecasters returning against
+the top AI forecasters; results unpublished. Best 2026 ForecastBench score 67 (GPT-5.5
+high) against 65.3 (2025, GPT-5) and 61.5 (2023, GPT-4). A Claude 4.5 Sonnet bot placed
+33rd of 1130 humans (top ~3%) in the Spring 2026 Cup. No Q3/Q4 2026 Metaculus AIB results
+located. Worth noting for our own method: FRI's extrapolated parity date (~Nov 2026) has
+landed near its central estimate, a small piece of evidence that capability extrapolation
+of this kind is tractable. HYBRID.md research tables updated.
+
+*Human anchors — NEGATIVE.* No new published Samotsvety, Swift Centre or Good Judgment/FRI
+probability on Iran regime stability located.
+
+Next panel re-poll: ~Feb 2027 (quarterly).
+
+Sources: [GlobalSecurity Iran war OPREP](https://www.globalsecurity.org/military/ops/iran-war-oprep.htm) ·
+[Al Jazeera, Iran calls US reply unconvincing](https://www.aljazeera.com/news/2026/11/4/iran-says-us-reply-to-hormuz-plan-unconvincing-trump-confirms-strikes) ·
+[CFR, planning for Iran's leadership transition](https://www.cfr.org/reports/leadership-transition-in-iran) ·
+[CSM, regime quells protests](https://www.csmonitor.com/World/Middle-East/2026/0331/iran-war-irgc-basij-intimidation-protests) ·
+[Foreign Policy on Mojtaba's appointment](https://foreignpolicy.com/2026/03/11/ayatollah-mojtaba-khamenei-iran-war-supreme-leader/) ·
+[Critical Threats collapse indicators (stale since 2026-02-03)](https://www.criticalthreats.org/analysis/indicators-of-iranian-regime-collapse) ·
+[FRI: LLMs are closing the gap on human superforecasters](https://forecastingresearch.substack.com/p/llms-are-closing-the-gap-on-human) ·
+[ForecastBench paper](https://faculty.wharton.upenn.edu/wp-content/uploads/2026/02/ForecastBench_A_Dynamic_.pdf) ·
+[Metaculus, AI forecasting in 2026](https://www.metaculus.com/notebooks/43363/ai-forecasting-in-2026/)

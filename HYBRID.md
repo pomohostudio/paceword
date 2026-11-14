@@ -22,7 +22,7 @@ judgement increment written down.
 
 | System | Result | Architecture |
 |---|---|---|
-| [AIA Forecaster](https://arxiv.org/abs/2511.07678) (Nov 2025) | **0.1125 vs superforecaster median 0.1110 on ForecastBench — parity, first ever** | (1) agentic search over high-quality news; (2) supervisor agent reconciling disparate forecasts; (3) statistical calibration against LLM biases. Underperforms liquid prediction markets, but ensemble with market consensus beats consensus alone |
+| [AIA Forecaster](https://arxiv.org/abs/2511.07678) (Nov 2025) | **0.1125 vs superforecaster median 0.1110 on ForecastBench — parity, first ever**; and as of the 2026-11-14 cycle **FRI itself now states "AI models now match superforecasters on ForecastBench", explicitly NOT by a statistically significant margin, with an October 2026 rematch running (superforecasters returning against the top AI forecasters), results not yet published**; best 2026 ForecastBench score 67 (GPT-5.5 high) against 65.3 (2025, GPT-5) and 61.5 (2023, GPT-4) | (1) agentic search over high-quality news; (2) supervisor agent reconciling disparate forecasts; (3) statistical calibration against LLM biases. Underperforms liquid prediction markets, but ensemble with market consensus beats consensus alone |
 | Metaculus AIB best bot (metac-claude + asknews) | top ~3% of 1130 humans, Spring 2026 Cup. **A bot won the Summer 2026 Metaculus Cup outright, 2026-09-05** (bots 1st/2nd/5th, humans 3rd/4th) — but the Cup rewards coverage, earliness and update frequency, so it is not a controlled comparison, and sources disagree on exact standings | LLM + news retrieval |
 | Halawi et al. 2024 | approached crowd aggregate | retrieval-augmented LLM, fine-tuned |
 | [ViEWS/Conflictology](https://journals.sagepub.com/doi/10.1177/00223433241300862) (Hegre et al.) | leads the 2023/24 fatalities challenge | ensembles forecasting full probability *distributions* of conflict deaths, country-month |
@@ -37,7 +37,13 @@ judgement increment written down.
    Summer 2026 Cup outright. Metaculus's standing objection still holds and is worth
    preserving: most external parity claims rest on backtests against already-resolved
    questions, not live forward evaluation. FRI's extrapolated parity date (~Nov 2026,
-   CI Dec 2025 – Jan 2028) falls inside this window.
+   CI Dec 2025 – Jan 2028) falls inside this window — and as of the 2026-11-14 cycle FRI
+   asserts parity has been REACHED on ForecastBench, still without statistical
+   significance. Two notes for our own method. First, FRI's parity forecast appears to
+   have landed near its central estimate, which is a small piece of evidence that this
+   kind of capability extrapolation is tractable. Second, the October rematch is the one
+   to watch, because it is a live forward test rather than a backtest; log its result
+   when published.
 4. Nobody reports a bare number: distributions, intervals, and named resolution criteria.
 
 ## What that means for this tool
