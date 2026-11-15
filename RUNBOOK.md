@@ -377,3 +377,45 @@ Sources: [GlobalSecurity Iran war OPREP](https://www.globalsecurity.org/military
 [FRI: LLMs are closing the gap on human superforecasters](https://forecastingresearch.substack.com/p/llms-are-closing-the-gap-on-human) ·
 [ForecastBench paper](https://faculty.wharton.upenn.edu/wp-content/uploads/2026/02/ForecastBench_A_Dynamic_.pdf) ·
 [Metaculus, AI forecasting in 2026](https://www.metaculus.com/notebooks/43363/ai-forecasting-in-2026/)
+
+**2026-11-15 — update 3a, canonical panel re-poll ATTEMPTED AND BLOCKED.** No change to the
+number; this entry exists so the protocol record is honest.
+
+The separate quarterly re-poll Routine (`trig_01RznzGXuQzmqfXuHy9asCvW`) fired 30 minutes
+after the monthly cycle and specifies the registered protocol more fully than the monthly
+one does. Comparing the two specs surfaced a real deviation in update 3's panel, recorded
+here against that panel's number:
+
+**Update 3's re-poll departed from the Version 3.1 protocol in three ways.** Version 3.1
+states that each panelist "ran its own news retrieval and surfaced evidence the others
+missed", over four models, with the shared outside-view scenario table. Update 3 instead
+used (i) three models not four, (ii) a single situation brief written by the orchestrator,
+and (iii) an explicit instruction NOT to search. (ii) is the one that matters: a panel fed
+one author's brief shares that author's framing. The brief led with stability facts — the
+succession survived, the forces stayed loyal, there is no coherent opposition — and all
+three panelists then returned large downward increments on exactly those points. So the
+reported move from 0.18 (Aug) to a 0.09 median (Nov) is **confounded with orchestrator
+anchoring and is not apples-to-apples with the August baseline**, which used independent
+retrieval. Treat update 3's 0.09 as an upper bound on how much of that drop is real
+updating.
+
+**The canonical re-run could not be executed.** Four panelists (haiku/sonnet/opus/fable,
+own retrieval, scenario table, no prior numbers) were launched three times on 11-14 and
+11-15. All three batches were destroyed by container restarts before any agent reported;
+`run_in_background: false` was not honored by the harness, so the work could not be pinned
+inside a single turn. Ten agent-runs produced zero results. No canonical November panel
+exists.
+
+**Standing position.** The logged ensemble remains **0.13 [0.05, 0.30]** from update 3,
+unchanged. Its LLM-panel species input (median 0.09) now carries the documented protocol
+deviation above and should be weighted accordingly — the statistical species (0.17) is the
+better-founded of the two inputs this cycle. The canonical re-poll is DEFERRED to the next
+cycle, where it should be run with the panelists executed in a way that survives a restart,
+or in a session where background agents are stable.
+
+**Process finding for the owner.** Two Routines now schedule the same quarterly re-poll:
+the monthly cycle's step 3 and the dedicated quarterly Routine. Recommend keeping the
+dedicated one, which carries the fuller protocol spec, and dropping the panel step from the
+monthly cycle. Both Routines still name the `cthmodules-audit` branch, renamed and deleted
+on 2026-09-16; three cycles have now run on `forecast-agent` instead. Neither change made
+here: editing a scheduled trigger is the owner's call.
